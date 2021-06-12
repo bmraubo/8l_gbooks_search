@@ -13,3 +13,12 @@ A user should be able to select a book from the five displayed to save to a “R
 
 View a “Reading List” with all the books the user has selected from their queries -- this is a local reading list and not tied to Google Books’s account features.
 
+#########################
+
+The architecture of the app is limited by the fact that I have not used JavaScript before. 
+
+printData()
+
+I want the data to be in a consistent format before moving on with displaying it.
+So everything is put into a single array. Issue is that Books generally have one title, one publisher, but several authors - too many authors would cause display issues, so the number is limited to 3. If there are more than 3 authors a plus sign is displayed. 
+

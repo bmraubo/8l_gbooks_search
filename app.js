@@ -1,18 +1,112 @@
-const req = require('request')
+const req = require('request');
 const inq = require('inquirer');
+const fs = require('fs');
 
 /////Help parameter to explain options - there is only one - 'View reading list'
 
 /////Search function
 
-function parseData(data) { //takes the request data and extracts the title, authors and publisher
+//function that accepts user input through checkboxes
+
+function saveBook(chosenBooks) {
+    //converts chosen book data to JSON format and stores it in a local file
+    var jsonData = JSON.stringify(chosenBooks);
+    fs.writeFile('readinglist.txt', jsonData, function(err) {
+        if (err) {
+            console.log(err)
+        };
+    });
+}
+
+function chooseBook(results) {
+    var chosenBooks = []
+    let choices = []
+    let bookNum = 1
+    for (arr of results) {
+        bookObject = {
+            name: String('\tTitle:\t' + arr[0] + '\n' +
+            '\tAuthor(s):\t' + String(arr.slice(1,arr.length-1).join(', ')) + '\n' + 
+            '\tPublisher:\t' + arr[arr.length-1] + '\n'), //`Result ${bookNum}`,
+            /*message: String('\nTitle:\n', arr[0],'\n',
+            'Author(s):\n',String(arr.slice(1,arr.length-1).join(', ')),'\n',
+            'Publisher:\n',arr[arr.length-1]),
+            title: arr[0],
+            author: String(arr.slice(1,arr.length-1).join(', ')),
+            publisher: arr[arr.length-1],*/
+            value: {title: arr[0], author: String(arr.slice(1,arr.length-1).join(', ')), publisher: arr[arr.length-1]}//`Result ${bookNum}`
+        };
+        choices.push(bookObject)
+        bookNum++
+    }
+    inq
+    .prompt({
+        type: 'checkbox',
+        name: 'Results',
+        choices: choices,
+        pageSize: 50,
+        loop: false
+    })
+    .then(answers => {
+        answers = Array(answers)
+        //console.log(answers)
+        console.log('Books saved to Reading list:');
+        for (x of answers) {
+            //console.log(x.Results);
+            for (y of x.Results) {
+                chosenBooks.push(y)
+                console.log(chosenBooks)
+                saveBook(chosenBooks) 
+            }
+        }
+    });
+};
+
+function printData(title, authors, publisher) {
+    // Presents data in a nice way for the user
+    var itemData = [];
+    itemData.push(title);
+    //There might be academic papers etc with many authors - if > 3 indicating with a +
+    if (authors == undefined) {
+        itemData.push('Unknown')
+    } else if (authors.length <= 3) {
+        for (author of authors) {
+            itemData.push(author)
+        }; 
+    } else {
+        for (author of authors.slice(0,3)) {
+            itemData.push(author)
+        };
+    itemData.push(`& ${authors.length-3} Others`)
+    };
+    
+    itemData.push(publisher);
+    //console.log(itemData);
+    //console.log(title, authors, publisher);
+    console.log(
+        '\nTitle:\n', itemData[0],'\n',
+        'Author(s):\n',String(itemData.slice(1,itemData.length-1).join(', ')),'\n',
+        'Publisher:\n',itemData[itemData.length-1]);
+    return itemData
+    // print data using inquirer and request user interaction
+
+};
+
+function parseData(data) {
+    var results = [] 
+    //takes the request data and extracts the title, authors and publisher
     var parsedData = JSON.parse(data);
     var firstFive = parsedData.items.slice(0,5);
     //console.log(firstFive[0]);
     for (item of firstFive) {
-        console.log(item.volumeInfo.title, item.volumeInfo.authors, item.volumeInfo.publisher);
-    }
-}
+        var title = item.volumeInfo.title; 
+        var authors = item.volumeInfo.authors; // has to work for multiple authors
+        var publisher = item.volumeInfo.publisher;
+        if (publisher == undefined) {publisher = 'Unknown'}; //trying to avoid the ugly undefined value in results
+        results.push(printData(title,authors,publisher));
+    };
+    // console.log(results)
+    chooseBook(results);
+};
 
 function runSearch(searchTerm) {
     var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
@@ -24,14 +118,16 @@ function runSearch(searchTerm) {
     console.log(searchUrl);
     req(searchUrl, function (error, response, body) {
         if (error != null) {
-        console.error('error: ', error);
-        console.log('statusCode: ', response && response.statusCode);
+            // notify user if error occurs
+            console.error('error: ', error);
+            console.log('statusCode: ', response && response.statusCode);
         } else {
-        var reqBody = body;
-        //console.log('Body: ', reqBody);
-        parseData(reqBody)
-        }
-    })
+            //otherwise proceed to parse data
+            //var reqBody = body;
+            //console.log('Body: ', reqBody);
+            parseData(body)
+        };
+    });
 };
 
 //test
