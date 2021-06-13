@@ -144,10 +144,10 @@ function runSearch(searchTerm) {
     var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
     //convert search term to search string
     var searchString = searchTerm.split(' ').join('+');
-    console.log(searchString);
+    //console.log(searchString);
     //send HTTP GET request to https://www.googleapis.com/books/v1/volumes?q=search+terms
     var searchUrl = baseUrl + searchString;
-    console.log(searchUrl);
+    //console.log(searchUrl);
     req(searchUrl, function (error, response, body) {
         if (error != null) {
             // notify user if error occurs
