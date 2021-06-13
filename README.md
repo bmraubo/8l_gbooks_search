@@ -31,9 +31,11 @@ The function takes the books chosen in chooseBook(), coverts it to a JSON sting,
 
 Problems emerge with reading when the app is used more than once. Essentially two lists are created and the JSON parser in viewlist.parseFile() struggles. Instinctively, a way to deal with this would be check whether a JSON already exists, and if so, extract the data, add new books, then stringify again. Googling for a better way.
 
-This is harder to resolve than expected. The parsedData is an object... but in square brackets. typeof confirms object. Cannot push because object. Merging is problematic, because data is replaced. Surely it is a list of objects?
+This is harder to resolve than expected. The parsedData is an object... but in square brackets. typeof confirms object. Cannot push() because object. Merging is problematic, because data is replaced. Surely it is a list of objects?
 
-So apparently, typeof returns object for array... this is odd, but StackOverflow says this is a quirk of JavaScript. 
+So apparently, typeof returns object for array... this is odd, but StackOverflow says this is a quirk of JavaScript. But this should affect my ability to push data.
+
+Concat. The answer is concat - parsedData = parsedData.concat(chosenBooks)
 
 chooseBook()
 
@@ -75,3 +77,20 @@ This is contained in a seperate file, as ultimately I want the app to launch int
 Viewing the reading list has some of the JS familiarity issues found above, but is generally a much simpler concept. 2 functions - one to extract and parse the JSON data, the other to display it. 
 
 Finally a menu function to allow return to main menu - this one will be done in readlines to demonstrate capability with inbuilt module and use answer validation. The other option will quit the app. 
+
+Step Two - Add elegance
+
+Basic functionality is there - now to add some quality of life features.
+
+First - menus.
+
+I want the app to start with a welcome screen that describes what it is, what it does, and provides access to the 2 main features - reading list and search function.
+
+After running the search function, I want the app to ask to return to menu or run another search. I imagine this will involve callbacks. 
+
+After viewing the reading list, I want the app to ask to go back to menu or exit.
+
+Then I can turn to architecture...
+
+
+

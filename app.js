@@ -57,13 +57,14 @@ function chooseBook(results) {
     for (arr of results) {
         bookObject = {
             name: //how the book info will be displayed in the Results printout
-            String('\tTitle:\t' + arr[0] + '\n' +
+            String('\tTitle:\t\t' + arr[0] + '\n' +
             '\tAuthor(s):\t' + String(arr.slice(1,arr.length-1).join(', ')) + '\n' + 
             '\tPublisher:\t' + arr[arr.length-1] + '\n'),
             value: { //how the information will be stored in inquirer answers
                 title: arr[0], 
                 author: String(arr.slice(1,arr.length-1).join(', ')), 
-                publisher: arr[arr.length-1]} 
+                publisher: arr[arr.length-1]
+            } 
         };
         choices.push(bookObject)
         bookNum++
@@ -117,8 +118,6 @@ function printData(title, authors, publisher) {
         'Author(s):\n',String(itemData.slice(1,itemData.length-1).join(', ')),'\n',
         'Publisher:\n',itemData[itemData.length-1]); */
     return itemData
-    // print data using inquirer and request user interaction
-
 };
 
 function parseData(data) {
@@ -177,6 +176,18 @@ function askQuery() {
         runSearch(answers.bookSearch)
     }); 
 };
+
+//Main menu
+
+function mainMenu() {
+    console.log('GoogleBooks Search\nDeveloped for 8thLight Technical Assessment\n\n');
+    inq
+    .prompt([
+        {
+            
+        }
+    ])
+}
 
 //test
 

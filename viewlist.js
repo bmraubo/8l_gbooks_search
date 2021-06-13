@@ -15,7 +15,7 @@ function listMenu() {
 
 function displayList(parsedData) {
     for (obj of parsedData) {
-        console.log('Title:\t' + obj.title + '\n' +
+        console.log('Title:\t\t' + obj.title + '\n' +
         'Author(s):\t' + obj.author + '\n' + 
         'Publisher:\t' + obj.publisher + '\n');
     };
