@@ -10,12 +10,14 @@ const fs = require('fs');
 
 function saveBook(chosenBooks) {
     //converts chosen book data to JSON format and stores it in a local file
-    var jsonData = JSON.stringify(chosenBooks);
-    fs.writeFile('readinglist.txt', jsonData, function(err) {
-        if (err) {
-            console.log(err)
-        };
-    });
+    for (obj of chosenBooks) {
+        var jsonData = JSON.stringify(obj);
+        fs.appendFile('readinglist.txt', jsonData, function(err) {
+            if (err) {
+                console.log(err)
+            };
+        });
+    }
 }
 
 function chooseBook(results) {
@@ -24,22 +26,20 @@ function chooseBook(results) {
     let bookNum = 1
     for (arr of results) {
         bookObject = {
-            name: String('\tTitle:\t' + arr[0] + '\n' +
+            name: //how the book info will be displayed in the Results printout
+            String('\tTitle:\t' + arr[0] + '\n' +
             '\tAuthor(s):\t' + String(arr.slice(1,arr.length-1).join(', ')) + '\n' + 
-            '\tPublisher:\t' + arr[arr.length-1] + '\n'), //`Result ${bookNum}`,
-            /*message: String('\nTitle:\n', arr[0],'\n',
-            'Author(s):\n',String(arr.slice(1,arr.length-1).join(', ')),'\n',
-            'Publisher:\n',arr[arr.length-1]),
-            title: arr[0],
-            author: String(arr.slice(1,arr.length-1).join(', ')),
-            publisher: arr[arr.length-1],*/
-            value: {title: arr[0], author: String(arr.slice(1,arr.length-1).join(', ')), publisher: arr[arr.length-1]}//`Result ${bookNum}`
+            '\tPublisher:\t' + arr[arr.length-1] + '\n'),
+            value: { //how the information will be stored in inquirer answers
+                title: arr[0], 
+                author: String(arr.slice(1,arr.length-1).join(', ')), 
+                publisher: arr[arr.length-1]} 
         };
         choices.push(bookObject)
         bookNum++
     }
     inq
-    .prompt({
+    .prompt({ //displays list of results with checkboxes that can be selected to save book
         type: 'checkbox',
         name: 'Results',
         choices: choices,
@@ -49,15 +49,15 @@ function chooseBook(results) {
     .then(answers => {
         answers = Array(answers)
         //console.log(answers)
-        console.log('Books saved to Reading list:');
-        for (x of answers) {
+        console.log('Books saved to Reading list');
+        for (x of answers) { //this is extremely messy and needs to be cleaned up
             //console.log(x.Results);
             for (y of x.Results) {
                 chosenBooks.push(y)
-                console.log(chosenBooks)
-                saveBook(chosenBooks) 
             }
         }
+        console.log(chosenBooks)
+        saveBook(chosenBooks) 
     });
 };
 
@@ -82,10 +82,10 @@ function printData(title, authors, publisher) {
     itemData.push(publisher);
     //console.log(itemData);
     //console.log(title, authors, publisher);
-    console.log(
+    /*console.log(
         '\nTitle:\n', itemData[0],'\n',
         'Author(s):\n',String(itemData.slice(1,itemData.length-1).join(', ')),'\n',
-        'Publisher:\n',itemData[itemData.length-1]);
+        'Publisher:\n',itemData[itemData.length-1]); */
     return itemData
     // print data using inquirer and request user interaction
 
