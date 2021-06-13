@@ -27,7 +27,13 @@ Testing - the app is tested during construction by regularly printing output of 
 
 saveBook()
 
-The function takes the books chosen in chooseBook(), coverts it to a JSON sting, and saves it locally to readinglist.txt
+The function takes the books chosen in chooseBook(), coverts it to a JSON sting, and saves it locally to readinglist.json.
+
+Problems emerge with reading when the app is used more than once. Essentially two lists are created and the JSON parser in viewlist.parseFile() struggles. Instinctively, a way to deal with this would be check whether a JSON already exists, and if so, extract the data, add new books, then stringify again. Googling for a better way.
+
+This is harder to resolve than expected. The parsedData is an object... but in square brackets. typeof confirms object. Cannot push because object. Merging is problematic, because data is replaced. Surely it is a list of objects?
+
+So apparently, typeof returns object for array... this is odd, but StackOverflow says this is a quirk of JavaScript. 
 
 chooseBook()
 

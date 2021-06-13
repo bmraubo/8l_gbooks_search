@@ -4,15 +4,47 @@ const fs = require('fs');
 
 function saveBook(chosenBooks) {
     //converts chosen book data to JSON format and stores it in a local file
-    var jsonData = JSON.stringify(chosenBooks);
-    fs.appendFile('readinglist.json', jsonData, function(err) {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log(`${chosenBooks.length} book(s) saved to Reading List`)
-        };
-    });
-    
+    //checks if a reading list already exists
+    var fileName = 'readinglist.json'
+    if (fs.existsSync(fileName)) {
+        //unpack data
+        fs.readFile(fileName, 'utf8', function (err, data) {
+            if (err) {
+                console.log(err)
+            } else {
+                var parsedData = JSON.parse(data)
+                //console.log(parsedData)
+                //console.log(chosenBooks)
+                //console.log(typeof chosenBooks)
+                //console.log(typeof parsedData)
+                parsedData = parsedData.concat(chosenBooks)
+                //console.log(parsedData)
+                var jsonData = JSON.stringify(parsedData);
+                fs.writeFile('readinglist.json', jsonData, function(err) {
+                    if (err) {
+                        console.log(err)
+                    } else {
+                        console.log(`${chosenBooks.length} book(s) saved to Reading List`)
+                    }
+                })
+            }
+        })
+        //add new books to reading list
+        
+        //package data
+        //write to file
+    } else {
+        //package data
+        var jsonData = JSON.stringify(chosenBooks);
+        //write to file
+        fs.writeFile('readinglist.json', jsonData, function(err) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log(`${chosenBooks.length} book(s) saved to Reading List`)
+            }
+        })
+    }
 };
 
 function chooseBook(results) {

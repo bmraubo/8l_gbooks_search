@@ -1,11 +1,15 @@
 const fs = require('fs');
-const path = require('path');
-const { parseDate } = require('tough-cookie');
 
 //file path
 
 const fileName = 'readinglist.json';
 
+//give option to return to menu or quit app
+
+function listMenu() {
+    console.log('Go back to menu (y/n)?')
+
+}
 
 //display reading list
 
@@ -24,15 +28,14 @@ function parseFile() {
         if (err) {
             console.log(err)
         } else {
-            console.log('opening file')
-            var rawData = data
-            var parsedData = JSON.parse(rawData)
+            console.log('opening file...')
+            var parsedData = JSON.parse(data)
             //console.log(parsedData)
             displayList(parsedData) 
         };
     }); 
 };
 
-//give option to return to menu or quit app
+
 
 parseFile()
