@@ -2,25 +2,23 @@ const req = require('request');
 const inq = require('inquirer');
 const fs = require('fs');
 
-/////Help parameter to explain options - there is only one - 'View reading list'
-
-/////Search function
-
-//function that accepts user input through checkboxes
-
 function saveBook(chosenBooks) {
     //converts chosen book data to JSON format and stores it in a local file
-    for (obj of chosenBooks) {
-        var jsonData = JSON.stringify(obj);
-        fs.appendFile('readinglist.txt', jsonData, function(err) {
-            if (err) {
-                console.log(err)
-            };
-        });
-    }
-}
+    var jsonData = JSON.stringify(chosenBooks);
+    fs.appendFile('readinglist.json', jsonData, function(err) {
+        if (err) {
+            console.log(err)
+        } else {
+            console.log(`${chosenBooks.length} book(s) saved to Reading List`)
+        };
+    });
+    
+};
 
 function chooseBook(results) {
+    //func takes the results of the search, prepares them for display with inquirer
+    //results are then displayed with checkboxes that allow user input to save multiple books
+    //chosen books are put into saveBook func
     var chosenBooks = []
     let choices = []
     let bookNum = 1
@@ -49,14 +47,14 @@ function chooseBook(results) {
     .then(answers => {
         answers = Array(answers)
         //console.log(answers)
-        console.log('Books saved to Reading list');
+        //console.log('Books saved to Reading list');
         for (x of answers) { //this is extremely messy and needs to be cleaned up
             //console.log(x.Results);
             for (y of x.Results) {
                 chosenBooks.push(y)
             }
         }
-        console.log(chosenBooks)
+        //console.log(chosenBooks)
         saveBook(chosenBooks) 
     });
 };
@@ -140,7 +138,7 @@ function askQuery() {
     .prompt([
         {
             name: 'bookSearch',
-            message: 'Enter Search Term'
+            message: 'Enter Search Term: '
         },
     ])
     .then(answers => {
@@ -153,27 +151,4 @@ function askQuery() {
 askQuery()
 
 
-//Send Request through Google Books API
-
-//function runSearch(searchTerm)
-
-//Print list of top 5 results
-    //Display books author, title, publishing company
-    //Use colors to make key information pop
-    //Use inquirer to print check boxes next to each result
-
-//Offer user information on next step to save book to Reading list
-
-///// Save function
-
-//Use JSON to store information
-
-//Allow user to select book from search results
-    //This is done using inqurier checkboxes
-
-//Save selected
-
-/////View function
-
-//Include launch parameter to view reading list
 
