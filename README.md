@@ -15,10 +15,34 @@ View a “Reading List” with all the books the user has selected from their qu
 
 #########################
 
-The architecture of the app is limited by the fact that I have not used JavaScript before. 
+Step One - Write something that works. 
+
+The architecture of the app is limited by the fact that I have not used JavaScript before. Therefore the whole thing has to be built around holes in my knowledge in order to deliver a working final product. 
+
+The main difference/difficulty I have found is the concept of asynchronous functions - this is something that Python handles for you. While Promises are necessary for some input driven mechanics, for the most part the app avoids them. While this is not the ideal solution (obviously), the hard deadline means that only so much time can be spent learning JavaScript before applying it. 
+
+Conceptually, it is a series of falling dominos. The initial function asks for User input, and that triggers a chain of linked functions that each process a single aspect of the whole.
+
+Testing - the app is tested during construction by regularly printing output of statements to console for review - is it what I want and can I work with the output down the line. Automated testing of the app will be added.
+
+saveBook()
+
+The function takes the books chosen in chooseBook(), coverts it to a JSON sting, and saves it locally to readinglist.txt
+
+chooseBook()
+
+Uses inquirer to create a interactive list of results. While this could be accomplished by printing a the results and then allowing manual user input in the form of 'Select Book to save (1-5)...', inquirer is just much nicer to deal with.
+
+The display of data within the results list - inquirer checkboxes use the name: value. As inquirer returns the answers in an unwieldy way (this is likely due to a fault in my own code, but I could not diagnose what causes it), I have used values: to save each answer as a object with the title, authors and publisher for processing by the saveBook() function. 
 
 printData()
 
 I want the data to be in a consistent format before moving on with displaying it.
 So everything is put into a single array. Issue is that Books generally have one title, one publisher, but several authors - too many authors would cause display issues, so the number is limited to 3. If there are more than 3 authors a plus sign is displayed. 
+
+parseData()
+
+runSearch()
+
+askQuery()
 
