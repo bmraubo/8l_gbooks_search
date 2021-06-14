@@ -1,19 +1,45 @@
 # 8l_gbooks_search
-Test Assessment for 8 Light
+
+- [Requirements](#Requirements)
+- [Using the App](#Using-the-App)
+- [Saving Books](#Saving-Books)
+- [Test Assessment for 8 Light](#Test-Assessment-for-8th-Light)
+- [Technical Summary](#Technical-Summary)
+- [Description of Process](#Description-of-Process)
+
+### Requirements
+
+Node.js v14.17.0
+
+inquirer
+
+### Using the App
+
+App can be run from Terminal/Cmd with the command $node app.js
+
+### Saving Books
+
+Running a search will display an Inquirer checkbox list of 5 results using. The list can be navigated using the up/down arrows. Use Space to select the book(s) you wish to save to the reading list. Press 'a' to select all. Press 'i' to invert the selection. 
+
+Pressing 'Enter' saves the book(s) to the reading list.
+
+### Test Assessment for 8th Light
 
 Command line application that allows you to use the Google Books API to search for books and construct a reading list.
 
 This application should allow you to:
 
-Type in a query and display a list of 5 books matching that query.
+- Type in a query and display a list of 5 books matching that query.
 
-Each item in the list should include the book's author, title, and publishing company.
+- Each item in the list should include the book's author, title, and publishing company.
 
-A user should be able to select a book from the five displayed to save to a “Reading List”
+- A user should be able to select a book from the five displayed to save to a “Reading List”
 
-View a “Reading List” with all the books the user has selected from their queries -- this is a local reading list and not tied to Google Books’s account features.
+- View a “Reading List” with all the books the user has selected from their queries. This is a local reading list and not tied to Google Books’s account features.
 
-#########################
+### Technical Summary
+
+### Description of Process
 
 Step One - Write something that works. 
 
