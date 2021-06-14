@@ -127,17 +127,21 @@ function parseData(data) {
     var results = [] 
     //takes the request data and extracts the title, authors and publisher
     var parsedData = JSON.parse(data);
-    var firstFive = parsedData.items.slice(0,5);
+    if (parsedData.items == undefined) {
+        console.log('No Results');
+        searchMenu()
+    } else {
+        var firstFive = parsedData.items.slice(0,5);
     //console.log(firstFive[0]);
-    for (item of firstFive) {
-        var title = item.volumeInfo.title; 
-        var authors = item.volumeInfo.authors; // has to work for multiple authors
-        var publisher = item.volumeInfo.publisher;
-        if (publisher == undefined) {publisher = 'Unknown'}; //trying to avoid the ugly undefined value in results
-        results.push(printData(title,authors,publisher));
+        for (item of firstFive) {
+            var title = item.volumeInfo.title; 
+            var authors = item.volumeInfo.authors; // has to work for multiple authors
+            var publisher = item.volumeInfo.publisher;
+            if (publisher == undefined) {publisher = 'Unknown'}; //trying to avoid the ugly undefined value in results
+            results.push(printData(title,authors,publisher));
     };
     // console.log(results)
-    chooseBook(results);
+    chooseBook(results);}
 };
 
 function runSearch(searchTerm) {
