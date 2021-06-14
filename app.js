@@ -1,6 +1,4 @@
-const req = require('request');
 const inq = require('inquirer');
-const fs = require('fs');
 const Search = require('./search')
 
 //Main menu

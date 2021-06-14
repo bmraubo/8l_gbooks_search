@@ -76,6 +76,7 @@ function chooseBook(results) {
     .prompt({ //displays list of results with checkboxes that can be selected to save book
         type: 'checkbox',
         name: 'Results',
+        message: 'Select books to add to reading list <SPACE> -- Press <ENTER> to continue\n',
         choices: choices,
         pageSize: 50,
         loop: false
@@ -223,16 +224,21 @@ function displayList(parsedData) {
 //parse JSON
 
 function parseFile() {
-    fs.readFile(fileName, 'utf8', function (err, data) {
-        if (err) {
-            console.log(err)
-        } else {
-            console.log('opening file...')
-            var parsedData = JSON.parse(data)
-            //console.log(parsedData)
-            displayList(parsedData) 
-        };
-    }); 
+    if (fs.existsSync(fileName)) {
+        fs.readFile(fileName, 'utf8', function (err, data) {
+            if (err) {
+                console.log(err)
+            } else {
+                console.log('opening file...')
+                var parsedData = JSON.parse(data)
+                //console.log(parsedData)
+                displayList(parsedData) 
+            };
+        }); 
+    } else {
+        console.log('No Reading List has been created')
+        listMenu()
+    }
 };
 
 //PostList Function
@@ -257,4 +263,4 @@ function listMenu() {
     });
 };
 
-module.exports = {saveBook, chooseBook, printData, parseData, runSearch, askQuery, displayList, parseFile}
+module.exports = {askQuery, parseFile}
