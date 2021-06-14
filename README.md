@@ -45,6 +45,18 @@ This application should allow you to:
 
 ## Technical Summary
 
+The app fulfills all the design requirements. The greatest challenge was the need to learn a new programming language. Javascript was chosen because node.js suitability for the task, similarity to my known language of Python, and popularity (and therefore value of this project as a learning exercise). Due to the limited amount of time and lack of familiarity with the language, the design of the app was in large part influenced by the need to avoid asynchronous functions, a concept that I could not grasp in time. The price for this trade off is the rather inelegant design and circular dependecy issues.   
+
+Inquirer is used as it is a well maintained, reliabile library for managing user input. While the inbuilt 'readlines' could be used to achieve the same purpose, the improvements to user experience with Inquirer make it the better choice for the job.
+
+The app consists of two files - app.js that controls initial user interactions, and search.js which houses the functions responsible for the Search feature and View Reading List Feature. Initially, Search and View Reading List functions were kept within seperate files, however combining the two was the cheapest solution to circular dependency issues. This causes a forseeable problem with expandability - the circular dependency issue will re-emerge should the size of search.js become unmanagable. The solution lies in gaining a greater understanding of asynchronous functions and callbacks, and refactoring on that basis.
+
+Upon launching the app, the user is presented with a Main Menu. Based on the user's choice, it will run imported functions from search.js. Conceptually, once the initial choice is made, the  role of app.js is complete - all further 'work' is done by the looping code within search.js.
+
+The Search Feature consists of a function that accepts user input, and subsequently triggers a chain of functions responsible for making the API call, parsing the response JSON, extracting the relevant information, and using Inquirer to display the information. the app awaits user input to indicate if any of the books are to be saved, and subsequently saves them in readinglist.json. The final function in the sequence uses Inquirer to create a menu with options for running another search, viewing the reading list, or quiting the app.
+
+The View Reading List feature allows the user to view all saved books in the order that they were saved. It parses the readinglist.json and unpacks the information before printing it for the user. The user is then presented with an Inquirer menu allowing them to run a search or quit the app.
+
 ## Description of Process
 
 ### Creating a functioning application 
@@ -61,13 +73,19 @@ Testing - the app is tested during construction by regularly printing output of 
 
 The function takes the books chosen in chooseBook(), coverts it to a JSON sting, and saves it locally to readinglist.json.
 
-Problems emerge with reading when the app is used more than once. Essentially two lists are created and the JSON parser in viewlist.parseFile() struggles. Instinctively, a way to deal with this would be check whether a JSON already exists, and if so, extract the data, add new books, then stringify again. Googling for a better way.
+Problems emerged with the Reading List when the app was used more than once. Essentially two lists are created and the JSON parser in parseFile() struggles. Instinctively, I thought to deal with this would be check whether a JSON already exists, and if so, extract the data, add new books, then stringify again. I googled for a more efficient way, however this seemed to be the common practice.
 
-This is harder to resolve than expected. The parsedData is an object... but in square brackets. typeof confirms object. Cannot push() because object. Merging is problematic, because data is replaced. Surely it is a list of objects?
+However, this was harder to resolve than expected. The extracted parsedData would not accept push() - Typeof testing showed it was an object - despite being in square brackets.
 
-So apparently, typeof returns object for array... this is odd, but StackOverflow says this is a quirk of JavaScript. But this should affect my ability to push data.
+I tried merge(), however that replaced the values apready present.
 
-Concat. The answer is concat - parsedData = parsedData.concat(chosenBooks)
+There was an old StackOverflow post which stated that a quirk of JavaScrpt was that Typeof returned Arrays as Objects. However this would not explain why the push() function would not work.
+
+I never actually resolved why my approach was wrong here.  Eventually, searching StackOverflow led to to contact:
+
+`parsedData = parsedData.concat(chosenBooks)`
+
+This achieved the desired outcome. 
 
 **chooseBook()**
 
