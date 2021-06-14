@@ -3,28 +3,33 @@ A CLI Google Books search app with locally-stored Reading List function
 
 - [Requirements](#Requirements)
 - [Using the App](#Using-the-App)
-- [Saving Books](#Saving-Books)
+    - [Saving Books](#Saving-Books)
 - [Brief](#Brief)
 - [Technical Summary](#Technical-Summary)
 - [Description of Process](#Description-of-Process)
+    - [Creating a functioning application](#Creating-a-functioning-application)
+    - [Considering Useability](#Considering-Useability)
+    - [Elegance](#Elegance)
 
-### Requirements
+---
+
+## Requirements
 
 Node.js v14.17.0
 
 inquirer
 
-### Using the App
+## Using the App
 
 App can be run from Terminal/Cmd with the command $node app.js
 
 ### Saving Books
 
-Running a search will display an Inquirer checkbox list of 5 results using. The list can be navigated using the up/down arrows. Use Space to select the book(s) you wish to save to the reading list. Press 'a' to select all. Press 'i' to invert the selection. 
+Running a search will display an Inquirer checkbox list of 5 results using. The list can be navigated using the **up/down** arrows. Use **Space** to select the book(s) you wish to save to the reading list. Press '**a**' to select all. Press '**i**' to invert the selection. 
 
-Pressing 'Enter' saves the book(s) to the reading list.
+Pressing '**Enter**' saves the book(s) to the reading list.
 
-### Brief
+## Brief
 
 Command line application that allows you to use the Google Books API to search for books and construct a reading list.
 
@@ -38,11 +43,11 @@ This application should allow you to:
 
 - View a “Reading List” with all the books the user has selected from their queries. This is a local reading list and not tied to Google Books’s account features.
 
-### Technical Summary
+## Technical Summary
 
-### Description of Process
+## Description of Process
 
-Step One - Write something that works. 
+### Creating a functioning application 
 
 The architecture of the app is limited by the fact that I have not used JavaScript before. Therefore the whole thing has to be built around holes in my knowledge in order to deliver a working final product. I am thinking in Python, but writing JS.
 
@@ -52,7 +57,7 @@ Conceptually, it is a series of falling dominos. The initial function asks for U
 
 Testing - the app is tested during construction by regularly printing output of statements to console for review - is it what I want and can I work with the output down the line. Automated testing of the app will be added.
 
-saveBook()
+**saveBook()**
 
 The function takes the books chosen in chooseBook(), coverts it to a JSON sting, and saves it locally to readinglist.json.
 
@@ -64,13 +69,13 @@ So apparently, typeof returns object for array... this is odd, but StackOverflow
 
 Concat. The answer is concat - parsedData = parsedData.concat(chosenBooks)
 
-chooseBook()
+**chooseBook()**
 
 Uses inquirer to create a interactive list of results. While this could be accomplished by printing a the results and then allowing manual user input in the form of 'Select Book to save (1-5)...', inquirer is just much nicer to deal with.
 
 The display of data within the results list - inquirer checkboxes use the name: value. As inquirer returns the answers in an unwieldy way (this is likely due to a fault in my own code, but I could not diagnose what causes it), I have used values: to save each answer as a object with the title, authors and publisher for processing by the saveBook() function. 
 
-printData()
+**printData()**
 
 I want the data to be in a consistent format before moving on with displaying it.
 So everything is put into a single array. 
@@ -79,11 +84,11 @@ Issue is that Books generally have one title, one publisher, but several authors
 
 Perhaps combine it with parseData?
 
-parseData()
+**parseData()**
 
 Unpacks the Google Books API reponse into usable data and extracts the desired information. Lot of overlap with printData() (which is not accurately named anyway, so it may be a good idea to combine the two functions. 
 
-runSearch()
+**runSearch()**
 
 Takes the search terms from askQuery() and prepares the string for combinining with the GoogleBooks API call. 
 
@@ -91,13 +96,13 @@ Uses request lib to run the search and obtain reponse, from which the body is th
 
 Output is the response body.
 
-askQuery()
+**askQuery()**
 
 Uses inquirer to ask user for search term. Following input, sends the search term into the runSearch() function. 
 
 This could also be accomplished using readlines, however inquirer provides more functionality, which is used in the chooseBook() function. 
 
-Viewing Reading List
+**Viewing Reading List**
 
 This is contained in a seperate file, as ultimately I want the app to launch into a menu from which search and view reading list would be seperate options.
 
@@ -105,11 +110,11 @@ Viewing the reading list has some of the JS familiarity issues found above, but 
 
 Finally a menu function to allow return to main menu - this one will be done in readlines to demonstrate capability with inbuilt module and use answer validation. The other option will quit the app. 
 
-Step Two - Add elegance
+### Considering Useability
 
 Basic functionality is there - now to add some quality of life features.
 
-First - menus.
+**Navigation and Architecture**
 
 I want the app to start with a welcome screen that describes what it is, what it does, and provides access to the 2 main features - reading list and search function.
 
@@ -118,6 +123,10 @@ After running the search function, I want the app to ask to return to menu or ru
 After viewing the reading list, I want the app to ask to go back to menu or exit.
 
 Then I can turn to architecture...
+
+**Edge Cases and Testing**
+
+### Elegance
 
 
 
