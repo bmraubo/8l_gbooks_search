@@ -1,9 +1,10 @@
 # 8l_gbooks_search
+A CLI Google Books search app with locally-stored Reading List function
 
 - [Requirements](#Requirements)
 - [Using the App](#Using-the-App)
 - [Saving Books](#Saving-Books)
-- [Test Assessment for 8 Light](#Test-Assessment-for-8th-Light)
+- [Brief](#Brief)
 - [Technical Summary](#Technical-Summary)
 - [Description of Process](#Description-of-Process)
 
@@ -23,7 +24,7 @@ Running a search will display an Inquirer checkbox list of 5 results using. The 
 
 Pressing 'Enter' saves the book(s) to the reading list.
 
-### Test Assessment for 8th Light
+### Brief
 
 Command line application that allows you to use the Google Books API to search for books and construct a reading list.
 
