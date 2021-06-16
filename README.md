@@ -83,11 +83,11 @@ The purpose of the Search Feature is to meet the first 3 project requirements:
 
 - A user should be able to select a book from the five displayed to save to a “Reading List”
 
-**askQuery()**
+*askQuery()*
 
 Uses inquirer to ask user for search term. Following input, sends the search term into the runSearch() function. 
 
-**runSearch()**
+*runSearch()*
 
 Takes the search terms from askQuery() and prepares the string for combinining with the GoogleBooks API call. 
 
@@ -95,11 +95,11 @@ Uses request lib to run the search and obtain reponse, from which the body is th
 
 Output is the response body.
 
-**parseData()**
+*parseData()*
 
 Unpacks the Google Books API reponse into usable data and extracts the desired information. Lot of overlap with printData() (which is not accurately named anyway, so it may be a good idea to combine the two functions.
 
-**printData()**
+*printData()*
 
 I want the data to be in a consistent format before moving on with displaying it.
 So everything is put into a single array. 
@@ -108,13 +108,13 @@ Issue is that Books generally have one title, one publisher, but several authors
 
 Perhaps combine it with parseData?
 
-**chooseBook()**
+*chooseBook()*
 
 Uses inquirer to create a interactive list of results. While this could be accomplished by printing a the results and then allowing manual user input in the form of 'Select Book to save (1-5)...', inquirer is just much nicer to deal with.
 
 The display of data within the results list - inquirer checkboxes use the name: value. As inquirer returns the answers in an unwieldy way (this is likely due to a fault in my own code, but I could not diagnose what causes it), I have used values: to save each answer as a object with the title, authors and publisher for processing by the saveBook() function. 
 
-**saveBook()**
+*saveBook()*
 
 The function takes the books chosen in chooseBook(), coverts it to a JSON sting, and saves it locally to readinglist.json.
 
@@ -156,15 +156,15 @@ After viewing the reading list, I want the app to ask to go back to menu or exit
 
 Then I can turn to architecture...
 
-**mainMenu()**
+*mainMenu()*
 
-**searchMenu()**
+*searchMenu()*
 
 An Inquirer menu that includes option for running another search, viewing the reading list or exiting the app.
 
 The options cover the all potential usage cases of the app (per the brief) by the user, and prevent a need to restart the app, which breaks immersion within the app environment.
 
-**listMenu()**
+*listMenu()*
 
 **Architecture**
 
