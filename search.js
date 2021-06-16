@@ -183,9 +183,10 @@ function saveBook(chosenBooks) {
     }
 };
 
-//PostSearch Function
+
 
 function searchMenu() {
+    //post search menu
     inq
     .prompt([
         {
@@ -210,9 +211,8 @@ function searchMenu() {
 
 //// READING LIST FUNCTIONS
 
-//parse JSON
-
 function parseFile() {
+    //parse readinglist.json
     if (fs.existsSync(fileName)) {
         fs.readFile(fileName, 'utf8', function (err, data) {
             if (err) {
@@ -230,9 +230,8 @@ function parseFile() {
     }
 };
 
-//display reading list
-
 function displayList(parsedData) {
+    //Display the Reading List
     for (obj of parsedData) {
         console.log('Title:\t\t' + obj.title + '\n' +
         'Author(s):\t' + obj.author + '\n' + 
@@ -241,10 +240,8 @@ function displayList(parsedData) {
     listMenu()
 };
 
-
-//PostList Function
-
 function listMenu() {
+    //Post-List Menu
     inq
     .prompt([
         {
@@ -263,10 +260,5 @@ function listMenu() {
         } else {}
     });
 };
-
-function rl_listMenu(){
-    console.log('End of Reading List\nWhat would you like to do?\n' + 
-    '\n1. Run Search'+ '\n2.Exit\n\n' + 'Select and Option')
-}
 
 module.exports = {askQuery, parseFile}
