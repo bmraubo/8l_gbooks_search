@@ -57,13 +57,13 @@ function parseData(data) {
             var authors = item.volumeInfo.authors; // has to work for multiple authors
             var publisher = item.volumeInfo.publisher;
             if (publisher == undefined) {publisher = 'Unknown'}; //trying to avoid the ugly undefined value in results
-            results.push(printData(title,authors,publisher));
+            results.push(getItemData(title,authors,publisher));
     };
     // console.log(results)
     chooseBook(results);}
 };
 
-function printData(title, authors, publisher) {
+function getItemData(title, authors, publisher) {
     // Presents data in a nice way for the user
     var itemData = [];
     itemData.push(title);
@@ -97,7 +97,6 @@ function chooseBook(results) {
     //chosen books are put into saveBook func
     var chosenBooks = []
     let choices = []
-    let bookNum = 1
     for (arr of results) {
         bookObject = {
             name: //how the book info will be displayed in the Results printout
@@ -111,7 +110,6 @@ function chooseBook(results) {
             } 
         };
         choices.push(bookObject)
-        bookNum++
     }
     inq
     .prompt({ //displays list of results with checkboxes that can be selected to save book
@@ -182,8 +180,6 @@ function saveBook(chosenBooks) {
         })
     }
 };
-
-
 
 function searchMenu() {
     //post search menu

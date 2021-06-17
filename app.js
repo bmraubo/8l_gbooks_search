@@ -27,8 +27,6 @@ function mainMenu() {
     });
 };
 
-//test
-
 mainMenu()
 
 

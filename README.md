@@ -3,15 +3,15 @@ A CLI Google Books search app with locally-stored Reading List function
 
 - [Requirements](#Requirements)
 - [Using the App](#Using-the-App)
-    - [Saving Books](#Saving-Books)
+- [Saving Books](#Saving-Books)
 - [Brief](#Brief)
 - [Technical Summary](#Technical-Summary)
 - [Description of Process](#Description-of-Process)
-    - [Creating a functioning application](#Creating-a-functioning-application)
-        - [Search Feature](#Search-Feature)
-        - [Reading List Feature](#Reading-List-Feature)
-    - [Considering Useability](#Considering-Useability)
-    - [Elegance](#Elegance)
+- [Creating a functioning application](#Creating-a-functioning-application)
+- [Search Feature](#Search-Feature)
+- [Reading List Feature](#Reading-List-Feature)
+- [Considering Useability](#Considering-Useability)
+- [Edge Cases and Testing](#Edge-Cases-and-Testing)
 
 ---
 
@@ -49,13 +49,13 @@ This application should allow you to:
 
 ## Technical Summary
 
-The app fulfills all the design requirements. The greatest challenge was the need to learn a new programming language. Javascript was chosen because node.js suitability for the task, similarity to my known language of Python, and popularity (and therefore value of this project as a learning exercise). Due to the limited amount of time and lack of familiarity with the language, the design of the app was in large part influenced by the need to avoid asynchronous functions, a concept that I could not grasp in time. The price for this trade off is the rather inelegant design and circular dependecy issues.   
+The app fulfills all the design requirements. The greatest challenge was the need to learn a new programming language. Javascript was chosen because node.js suitability for the task, similarity to my known language of Python, and popularity (and therefore value of this project as a learning exercise). Due to the limited amount of time and lack of familiarity with the language, the design of the app was in large part influenced by the need to avoid asynchronous functions, a concept that I could not grasp in time. The price for this trade off is the rather inelegant design and circular dependency issues. 
 
-Inquirer is used as it is a well maintained, reliabile library for managing user input. While the inbuilt 'readlines' could be used to achieve the same purpose, the improvements to user experience with Inquirer make it the better choice for the job. I do not think that the use of Inquirer circumvents the complexity of the task.
+Inquirer is used as it is a well maintained, reliable library for managing user input. While the inbuilt 'readlines could be used to achieve the same purpose, the improvements to user experience with Inquirer make it the better choice for the job. I do not think that the use of Inquirer circumvents the complexity of the task, although if necessary I am happy to rewrite it using in-built libraries.
 
-The app consists of two files - app.js that controls initial user interactions, and search.js which houses the functions responsible for the Search feature and View Reading List Feature. Initially, Search and View Reading List functions were kept within seperate files, however combining the two was the cheapest solution to circular dependency issues. This causes a forseeable problem with expandability - the circular dependency issue will re-emerge should the size of search.js become unmanagable. The solution lies in gaining a greater understanding of asynchronous functions and callbacks, and refactoring on that basis.
+The app consists of two files - app.js that controls initial user interactions, and search.js which houses the functions responsible for the Search feature and View Reading List Feature. Initially, Search and View Reading List functions were kept within separate files, however combining the two was the cheapest solution to circular dependency issues. This causes a foreseeable problem with expandability - the circular dependency issue will re-emerge should the size of search.js become unmanageable. The solution lies in gaining a greater understanding of asynchronous functions and callbacks, and refactoring on that basis.
 
-Upon launching the app, the user is presented with a Main Menu. Based on the user's choice, it will run imported functions from search.js. Conceptually, once the initial choice is made, the  role of app.js is complete - all further 'work' is done by the looping code within search.js.
+Upon launching the app, the user is presented with a Main Menu. Based on the user's choice, it will run imported functions from search.js. Conceptually, once the initial choice is made, the role of app.js is complete - all further 'work' is done by the looping code within search.js.
 
 The Search Feature consists of a function that accepts user input, and subsequently triggers a chain of functions responsible for making the API call, parsing the response JSON, extracting the relevant information, and using Inquirer to display the information. the app awaits user input to indicate if any of the books are to be saved, and subsequently saves them in readinglist.json. The final function in the sequence uses Inquirer to create a menu with options for running another search, viewing the reading list, or quiting the app.
 
@@ -71,7 +71,7 @@ The main difference/difficulty I have found is the concept of asynchronous funct
 
 **Testing**
 
- The app is tested during construction by regularly printing output of statements to console for review - is it what I want and can I work with the output down the line.
+The app is tested during construction by regularly printing output of statements to console for review - is it what I want and can I work with the output down the line.
 
 #### Search Feature
 
@@ -85,32 +85,35 @@ The purpose of the Search Feature is to meet the first 3 project requirements:
 
 *askQuery()*
 
-Uses inquirer to ask user for search term. Following input, sends the search term into the runSearch() function. 
+Uses Inquirer to ask user for search term. Following input, sends the search term into the runSearch() function. 
 
 *runSearch()*
 
-Takes the search terms from askQuery() and prepares the string for combinining with the GoogleBooks API call. 
+Takes the search terms from askQuery() and prepares the string for combining with the GoogleBooks API call. 
 
-Uses request lib to run the search and obtain reponse, from which the body is then extracted for parsing in the parseData() function. 
+Uses Request library to run the search and obtain repose, from which the body is then extracted for parsing in the parseData() function. 
 
 Output is the response body.
 
 *parseData()*
 
-Unpacks the Google Books API reponse into usable data and extracts the desired information. Lot of overlap with printData() (which is not accurately named anyway, so it may be a good idea to combine the two functions.
+Unpacks the Google Books API repose into usable data and extracts the desired information. Only the first 5 books are required, so the remainder is cut. 
 
-*printData()*
+An issue arose where there may be no results. This would result in an error as JS cannot iterate an Undefined. The function now checks for the undefined type and informs the user if there are no results. 
 
-I want the data to be in a consistent format before moving on with displaying it.
-So everything is put into a single array. 
+For each of the first 5 books, the data is dealt with by getItemData() below, which returns it in a manageable format - it is then added to the results for presentation to the user within the chooseBook function.
 
-Issue is that Books generally have one title, one publisher, but several authors - too many authors would cause display issues, so the number is limited to 3. If there are more than 3 authors a plus sign is displayed. 
+*getItemData()*
 
-Perhaps combine it with parseData?
+I want the data to be in a consistent format before moving on with displaying it - So everything is put into a single array. 
+
+I considered cases where the number of authors might exceed what is manageable. Issue is that Books generally have one title, one publisher, but several authors - too many authors would cause display issues, so the number is limited to 3. If there are more than 3 authors a plus sign is displayed. 
+
+The Item Data is returned to parseData().
 
 *chooseBook()*
 
-Uses inquirer to create a interactive list of results. While this could be accomplished by printing a the results and then allowing manual user input in the form of 'Select Book to save (1-5)...', inquirer is just much nicer to deal with.
+Uses Inquirer to create a interactive list of results. While this could be accomplished by printing a the results and then allowing manual user input in the form of 'Select Book to save (1-5)...', inquirer is just much nicer to deal with.
 
 The display of data within the results list - inquirer checkboxes use the name: value. As inquirer returns the answers in an unwieldy way (this is likely due to a fault in my own code, but I could not diagnose what causes it), I have used values: to save each answer as a object with the title, authors and publisher for processing by the saveBook() function. 
 
@@ -122,23 +125,27 @@ Problems emerged with the Reading List when the app was used more than once. Ess
 
 However, this was harder to resolve than expected. The extracted parsedData would not accept push() - Typeof testing showed it was an object - despite being in square brackets.
 
-I tried merge(), however that replaced the values apready present.
+I tried merge(), however that replaced the values already present.
 
-There was an old StackOverflow post which stated that a quirk of JavaScrpt was that Typeof returned Arrays as Objects. However this would not explain why the push() function would not work.
+There was an old StackOverflow post which stated that a quirk of JavaScript was that Typeof returned Arrays as Objects. However this would not explain why the push() function would not work.
 
-I never actually resolved why my approach was wrong here.  Eventually, searching StackOverflow led to to contact:
+I never actually resolved why my approach was wrong here. Eventually, searching StackOverflow led to to contact:
 
 `parsedData = parsedData.concat(chosenBooks)`
 
-This achieved the desired outcome.
+This achieved the desired outcome. The results are saved to a JSON, and the user is presented with the searchMenu().
+
+*searchMenu()*
+
+Finally, the user is presented with an Inquirer menu that allows them to run another search, view the reading list, or exit the app. 
 
 #### Reading List Feature
 
-This is contained in a seperate file, as ultimately I want the app to launch into a menu from which search and view reading list would be seperate options.
+This is contained in a separate file, as ultimately I want the app to launch into a menu from which search and view reading list would be separate options.
 
 Viewing the reading list has some of the JS familiarity issues found above, but is generally a much simpler concept. 2 functions - one to extract and parse the JSON data, the other to display it. 
 
-Finally a menu function to allow return to main menu - this one will be done in readlines to demonstrate capability with inbuilt module and use answer validation. The other option will quit the app. 
+Finally an Inquirer menu function to allow return to main menu.
 
 ### Considering Useability
 
@@ -148,15 +155,11 @@ One of the considerations is the ease of maintaining the app, and extending it t
 
 **Navigation**
 
-I want the app to start with a welcome screen that describes what it is, what it does, and provides access to the 2 main features - reading list and search function.
-
-After running the search function, I want the app to ask to return to menu or run another search. I imagine this will involve callbacks. 
-
-After viewing the reading list, I want the app to ask to go back to menu or exit.
-
-Then I can turn to architecture...
+The first thing I considered was how to tie the search and view reading list features together, and allow the user to interact with all the options in the app without needing to relaunch it, which I view as detrimental to the overall experience. 
 
 *mainMenu()*
+
+The menu which the user sees when opening the app. It informs the user what the app is, and gives them three choices; to run the search, to view the reading list, and to exit the app. 
 
 *searchMenu()*
 
@@ -166,11 +169,20 @@ The options cover the all potential usage cases of the app (per the brief) by th
 
 *listMenu()*
 
+Similar to the searchMenu(), but it does not include a reading list feature, as the user already has the list in front of them.
+
 **Architecture**
 
-**Edge Cases and Testing**
+As previously mentioned, technological limitations defined the architecture of the app. All the key functions of the app are stored within a single file due to circular import problems. These could be avoided by transferring the searchMenu() and listMenu() functions into app.js, and relying on promises to call specific function trees. 
 
-### Elegance
+Unfortunately, this limitation has a significant impact on the expandability of the app. Unless the app is refactored to rely on callbacks or promises, all the key functions would have to be kept within search.js, which would quickly become unwieldy. 
 
+Resolving this would be the main priority moving forward. 
 
+### Edge Cases and Testing
 
+Each function was initially tested by regularly printing the output to the console and manually reviewing what data was being worked with. Some of these testing commands were intentionally left in the code as comments to demonstrate thinking - I would ordinarily remove these to improve legibility.
+
+Once the Search feature was working based on manual searches, a list of search terms consisting of words and random letter stings was fed into the runSearch() function. Instead of triggering the ChooseBook() function, the results were printed to the console. 
+
+This revealed two edge cases; where Google Books returns no results, and where the list of authors is unmanageable. Both cases were handles within the code. 
