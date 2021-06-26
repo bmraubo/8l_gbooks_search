@@ -22,7 +22,7 @@ function mainMenu() {
         if (answers['Main Menu'] == 'Search for Book') {
             Search.askQuery()
         } else if (answers['Main Menu'] == 'View Reading List') {
-            Search.parseFile()
+            Search.ReadingList.parseFile()
         } else {}
     });
 };
