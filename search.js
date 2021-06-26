@@ -4,6 +4,230 @@ const fs = require('fs');
 
 const fileName = 'readinglist.json';
 
+////SEARCH OBJECT
+
+
+/* what is the structure? 
+
+The from the menu, you can initiate a search.
+
+The search construct an object with this.searchTerm
+
+Books as classes - each book is an object with a title, authors, and a publisher
+
+*/
+class Book {
+    
+    constructor(title, authors, publisher) {
+        this.title = title
+        this.authors = authors
+        this.publisher = publisher
+        this.checkAuthors()
+        this.checkPublisher()
+    }
+
+    checkAuthors() {
+        //avoid undefined value and limit authors to 3, with indication of more
+        let checked_authors = []
+        if (this.authors == undefined) {
+            this.authors = 'Unknown'
+        } else if (this.authors.length <= 3) {
+            this.authors.forEach(author => {
+                console.log(typeof this.authors)
+                console.log(this.authors)
+                checked_authors.push(author);
+            });
+            checked_authors = String(checked_authors.join(', '));
+            this.authors = checked_authors;
+        } else {
+            this.authors.slice(0,3).forEach(author => {
+                checked_authors.push(author);
+            });
+            checked_authors.push(`& ${this.authors.length-3} Others`);
+            checked_authors = String(checked_authors.join(', '));
+            this.authors = checked_authors;
+        }
+    }
+
+    checkPublisher() {
+        // avoid undefined value in results
+        if (this.publisher == undefined) {this.publisher = 'Unknown'};
+    }
+};
+
+class Search {
+    constructor(searchTerm) {
+        this.searchTerm = searchTerm
+        ;
+    }
+    
+    getData = function() {
+        let self = this
+        var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
+        var searchString = self.searchTerm.split(' ').join('+');
+        var searchUrl = baseUrl + searchString;
+        console.log(searchUrl)
+        req(searchUrl, function (error, response, body) {
+            if (error != null) {
+                // notify user if error occurs
+                console.error('error: ', error);
+                console.log('statusCode: ', response && response.statusCode);
+            } else {
+                //otherwise proceed to parse data
+                console.log('get data - OK')
+                self.parseData(body)
+            }
+        })
+    };
+
+    parseData = function(data) {
+        //console.log(data)
+        var results = [] 
+        //takes the request data and extracts the title, authors and publisher
+        var parsedData = JSON.parse(data);
+        if (parsedData.items == undefined) {
+            console.log('No Results');
+            this.searchMenu()
+        } else {
+            parsedData.items.slice(0,5).forEach(item => {
+                console.log(
+                    item.volumeInfo.title,
+                    item.volumeInfo.authors,
+                    item.volumeInfo.publisher
+                    )
+                results.push(new Book(
+                    item.volumeInfo.title,
+                    item.volumeInfo.authors,
+                    item.volumeInfo.publisher
+                    )
+                );
+                console.log(results)
+            });
+        console.log('parse Data - OK')
+        console.log(results)
+        this.chooseBook(results);
+        }
+    }
+
+    chooseBook = function(results) {
+        //func takes the results of the search, prepares them for display with inquirer
+        //results are then displayed with checkboxes that allow user input to save multiple books
+        //chosen books are put into saveBook func
+        var chosenBooks = []
+        let choices = []
+        results.forEach(arr => {
+            console.log(arr)
+            let bookObject = {
+                name: //how the book info will be displayed in the Results printout
+                String('\tTitle:\t\t' + arr.title + '\n' +
+                '\tAuthor(s):\t' + arr.authors + '\n' + 
+                '\tPublisher:\t' + arr.publisher + '\n'),
+                value: { //how the information will be stored in inquirer answers
+                    title: arr.title, 
+                    author: arr.authors, 
+                    publisher: arr.publisher
+                } 
+            };
+            choices.push(bookObject)
+        })
+        inq
+        .prompt({ //displays list of results with checkboxes that can be selected to save book
+            type: 'checkbox',
+            name: 'Results',
+            message: 'Select books to add to reading list <SPACE> -- Press <ENTER> to continue\n',
+            choices: choices,
+            pageSize: 50,
+            loop: false
+        })
+        .then(answers => {
+            answers = Array(answers)
+            //console.log(answers)
+            //console.log('Books saved to Reading list');
+            answers.forEach(x => { //this is extremely messy and needs to be cleaned up
+                //console.log(x.Results);
+                x.Results.forEach(y => {
+                    chosenBooks.push(y)
+                })
+            })
+            //console.log(chosenBooks)
+            console.log('Choose Book - OK')
+            console.log(chosenBooks)
+            this.saveBook(chosenBooks) 
+        });
+    };
+
+    saveBook = function(chosenBooks) {
+        var self = this;
+        //converts chosen book data to JSON format and stores it in a local file
+        //checks if a reading list already exists
+        if (fs.existsSync(fileName)) {
+            //unpack data
+            fs.readFile(fileName, 'utf8', function (err, data) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    var parsedData = JSON.parse(data)
+                    //console.log(parsedData)
+                    //console.log(chosenBooks)
+                    //console.log(typeof chosenBooks)
+                    //console.log(typeof parsedData)
+                    parsedData = parsedData.concat(chosenBooks)
+                    //console.log(parsedData)
+                    var jsonData = JSON.stringify(parsedData);
+                    fs.writeFile('readinglist.json', jsonData, function(err) {
+                        if (err) {
+                            console.log(err)
+                        } else {
+                            console.log(`${chosenBooks.length} book(s) saved to Reading List`)
+                            self.searchMenu()
+                        }
+                    })
+                }
+            })
+            //add new books to reading list
+            
+            //package data
+            //write to file
+        } else {
+            //package data
+            var jsonData = JSON.stringify(chosenBooks);
+            //write to file
+            fs.writeFile('readinglist.json', jsonData, function(err) {
+                if (err) {
+                    console.log(err)
+                } else {
+                    console.log(`${chosenBooks.length} book(s) saved to Reading List`)
+                    self.searchMenu()
+                }
+            })
+        }
+    };
+    
+    searchMenu = function() {
+        //post search menu
+        inq
+        .prompt([
+            {
+                type: 'list',
+                name: 'Search Complete',
+                message: 'What would you like to do next?',
+                choices: [
+                    {name: 'Run another Search'},
+                    {name: 'View Reading List'},
+                    {name: 'Exit'}
+                ]
+            }])
+        .then((answers) => {
+            //console.log(answers);
+            if (answers['Search Complete'] == 'Run another Search') {
+                askQuery()
+            } else if (answers['Search Complete'] == 'View Reading List') {
+                parseFile()
+            } else {}
+        });
+    };
+};   
+
 ////SEARCH FUNCTIONS
 
 function askQuery() {
@@ -16,193 +240,10 @@ function askQuery() {
         },
     ])
     .then(answers => {
-        runSearch(answers.bookSearch)
+        search = new Search(answers.bookSearch)
+        console.log(search)
+        search.getData()
     }); 
-};
-
-function runSearch(searchTerm) {
-    var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-    //convert search term to search string
-    var searchString = searchTerm.split(' ').join('+');
-    //console.log(searchString);
-    //send HTTP GET request to https://www.googleapis.com/books/v1/volumes?q=search+terms
-    var searchUrl = baseUrl + searchString;
-    //console.log(searchUrl);
-    req(searchUrl, function (error, response, body) {
-        if (error != null) {
-            // notify user if error occurs
-            console.error('error: ', error);
-            console.log('statusCode: ', response && response.statusCode);
-        } else {
-            //otherwise proceed to parse data
-            //var reqBody = body;
-            //console.log('Body: ', reqBody);
-            parseData(body)
-        };
-    });
-};
-
-function parseData(data) {
-    var results = [] 
-    //takes the request data and extracts the title, authors and publisher
-    var parsedData = JSON.parse(data);
-    if (parsedData.items == undefined) {
-        console.log('No Results');
-        searchMenu()
-    } else {
-        var firstFive = parsedData.items.slice(0,5);
-    //console.log(firstFive[0]);
-        for (item of firstFive) {
-            var title = item.volumeInfo.title; 
-            var authors = item.volumeInfo.authors; // has to work for multiple authors
-            var publisher = item.volumeInfo.publisher;
-            if (publisher == undefined) {publisher = 'Unknown'}; //trying to avoid the ugly undefined value in results
-            results.push(getItemData(title,authors,publisher));
-    };
-    // console.log(results)
-    chooseBook(results);}
-};
-
-function getItemData(title, authors, publisher) {
-    // Presents data in a nice way for the user
-    var itemData = [];
-    itemData.push(title);
-    //There might be academic papers etc with many authors - if > 3 indicating with a +
-    if (authors == undefined) {
-        itemData.push('Unknown')
-    } else if (authors.length <= 3) {
-        for (author of authors) {
-            itemData.push(author)
-        }; 
-    } else {
-        for (author of authors.slice(0,3)) {
-            itemData.push(author)
-        };
-    itemData.push(`& ${authors.length-3} Others`)
-    };
-    
-    itemData.push(publisher);
-    //console.log(itemData);
-    //console.log(title, authors, publisher);
-    /*console.log(
-        '\nTitle:\n', itemData[0],'\n',
-        'Author(s):\n',String(itemData.slice(1,itemData.length-1).join(', ')),'\n',
-        'Publisher:\n',itemData[itemData.length-1]); */
-    return itemData
-};
-
-function chooseBook(results) {
-    //func takes the results of the search, prepares them for display with inquirer
-    //results are then displayed with checkboxes that allow user input to save multiple books
-    //chosen books are put into saveBook func
-    var chosenBooks = []
-    let choices = []
-    for (arr of results) {
-        bookObject = {
-            name: //how the book info will be displayed in the Results printout
-            String('\tTitle:\t\t' + arr[0] + '\n' +
-            '\tAuthor(s):\t' + String(arr.slice(1,arr.length-1).join(', ')) + '\n' + 
-            '\tPublisher:\t' + arr[arr.length-1] + '\n'),
-            value: { //how the information will be stored in inquirer answers
-                title: arr[0], 
-                author: String(arr.slice(1,arr.length-1).join(', ')), 
-                publisher: arr[arr.length-1]
-            } 
-        };
-        choices.push(bookObject)
-    }
-    inq
-    .prompt({ //displays list of results with checkboxes that can be selected to save book
-        type: 'checkbox',
-        name: 'Results',
-        message: 'Select books to add to reading list <SPACE> -- Press <ENTER> to continue\n',
-        choices: choices,
-        pageSize: 50,
-        loop: false
-    })
-    .then(answers => {
-        answers = Array(answers)
-        //console.log(answers)
-        //console.log('Books saved to Reading list');
-        for (x of answers) { //this is extremely messy and needs to be cleaned up
-            //console.log(x.Results);
-            for (y of x.Results) {
-                chosenBooks.push(y)
-            }
-        }
-        //console.log(chosenBooks)
-        saveBook(chosenBooks) 
-    });
-};
-
-function saveBook(chosenBooks) {
-    //converts chosen book data to JSON format and stores it in a local file
-    //checks if a reading list already exists
-    if (fs.existsSync(fileName)) {
-        //unpack data
-        fs.readFile(fileName, 'utf8', function (err, data) {
-            if (err) {
-                console.log(err)
-            } else {
-                var parsedData = JSON.parse(data)
-                //console.log(parsedData)
-                //console.log(chosenBooks)
-                //console.log(typeof chosenBooks)
-                //console.log(typeof parsedData)
-                parsedData = parsedData.concat(chosenBooks)
-                //console.log(parsedData)
-                var jsonData = JSON.stringify(parsedData);
-                fs.writeFile('readinglist.json', jsonData, function(err) {
-                    if (err) {
-                        console.log(err)
-                    } else {
-                        console.log(`${chosenBooks.length} book(s) saved to Reading List`)
-                        searchMenu()
-                    }
-                })
-            }
-        })
-        //add new books to reading list
-        
-        //package data
-        //write to file
-    } else {
-        //package data
-        var jsonData = JSON.stringify(chosenBooks);
-        //write to file
-        fs.writeFile('readinglist.json', jsonData, function(err) {
-            if (err) {
-                console.log(err)
-            } else {
-                console.log(`${chosenBooks.length} book(s) saved to Reading List`)
-                searchMenu()
-            }
-        })
-    }
-};
-
-function searchMenu() {
-    //post search menu
-    inq
-    .prompt([
-        {
-            type: 'list',
-            name: 'Search Complete',
-            message: 'What would you like to do next?',
-            choices: [
-                {name: 'Run another Search'},
-                {name: 'View Reading List'},
-                {name: 'Exit'}
-            ]
-        }])
-    .then((answers) => {
-        //console.log(answers);
-        if (answers['Search Complete'] == 'Run another Search') {
-            askQuery()
-        } else if (answers['Search Complete'] == 'View Reading List') {
-            parseFile()
-        } else {}
-    });
 };
 
 //// READING LIST FUNCTIONS
@@ -257,4 +298,4 @@ function listMenu() {
     });
 };
 
-module.exports = {askQuery, parseFile}
+module.exports = {Search, Book, askQuery, parseFile}

@@ -19,9 +19,9 @@ A CLI Google Books search app with locally-stored Reading List function
 
 [Node.js v14.17.0](https://nodejs.org/)
 
-[Inquirer 8.1.0](https://github.com/SBoudrias/Inquirer.js/)
+[Inquirer 8.1.1](https://github.com/SBoudrias/Inquirer.js/)
 
-[Requests 2.88.2](https://github.com/request/request)
+[Request 2.88.2](https://github.com/request/request)
 
 ## Using the App
 

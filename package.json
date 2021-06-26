@@ -1,0 +1,26 @@
+{
+  "name": "8l_gbooks_search",
+  "version": "1.0.0",
+  "description": "GoogleBooks CLI App",
+  "main": "app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/qxcross/8l_gbooks_search.git"
+  },
+  "keywords": [
+    "GoogleBooks"
+  ],
+  "author": "BMRaubo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/qxcross/8l_gbooks_search/issues"
+  },
+  "homepage": "https://github.com/qxcross/8l_gbooks_search#readme",
+  "dependencies": {
+    "inquirer": "^8.1.1",
+    "request": "^2.88.2"
+  }
+}
