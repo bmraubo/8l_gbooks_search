@@ -28,22 +28,28 @@ class Search {
         this.searchTerm = searchTerm;
     }
     
-    getData = function() {
-        let self = this
-        var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-        var searchString = self.searchTerm.split(' ').join('+');
-        var searchUrl = baseUrl + searchString;
-        req(searchUrl, function (error, response, body) {
-            if (error != null) {
-                // notify user if error occurs
-                console.error('error: ', error);
-                console.log('statusCode: ', response && response.statusCode);
-            } else {
-                //otherwise proceed to parse data
-                self.parseData(body);
-            }
+    gBooksCall = function(searchUrl) {
+        return new Promise((resolve,reject) => {
+            req(searchUrl, function (error, response, body) {
+                if (error != null) {
+                    // notify user if error occurs -- test here
+                    console.error('error: ', error);
+                    reject(console.log('statusCode: ', response && response.statusCode));
+                } else {
+                    //otherwise fulfil promise and return body -- test here
+                    resolve(body);
+                }
+            })
         })
-    };
+    }
+
+    getData = async function() {
+        var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
+        var searchString = this.searchTerm.split(' ').join('+');
+        var searchUrl = baseUrl + searchString;
+        var body = await this.gBooksCall(searchUrl)
+        this.parseData(body)
+    }
 
     parseData = function(data) {
         //console.log(data)
@@ -73,7 +79,7 @@ class Search {
         var chosenBooks = [];
         let choices = [];
         results.forEach(arr => {
-            console.log(arr)
+            //console.log(arr)
             let bookObject = {
                 name: //how the book info will be displayed in the Results printout
                 String('\tTitle:\t\t' + arr.title + '\n' +
