@@ -9,6 +9,7 @@ const fileName = 'readinglist.json';
 function askQuery() {
     return new Promise((resolve,reject) => {
         inq
+        //Type in query in console
         .prompt([
             {
                 name: 'bookSearch',
@@ -18,8 +19,7 @@ function askQuery() {
         .then(answers => {
             resolve(answers.bookSearch)
         });
-    })
-    //Type in query in console
+    }) 
 };
 
 //Search Functionality
@@ -34,11 +34,11 @@ class Search {
         return new Promise((resolve,reject) => {
             req(searchUrl, function (error, response, body) {
                 if (error != null) {
-                    // notify user if error occurs -- test here
+                    // notify user if error occurs
                     console.error('error: ', error);
                     reject(console.log('statusCode: ', response && response.statusCode));
                 } else {
-                    //otherwise fulfil promise and return body -- test here
+                    //otherwise fulfil promise and return body
                     resolve(body);
                 }
             })

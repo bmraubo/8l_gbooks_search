@@ -25,13 +25,22 @@ describe('Testing Book Objects...', () => {
 
 describe('Testing Search Functionality', () => {
     var search1 = new search.Search('moby dick')
+    search1.getData()
     //tests go here
 
-    test('getData', () => {
+    test('getData - body is not undefined', () => {
         expect(typeof search1.body).not.toBe(undefined)
-    })
+    });
 
-    //test('parseData')
+    describe('parseData - should return an array of length 5', () => {
+        test('Data type is array', () => {
+            expect(typeof search1.parseData(search1.body)).toBe('array')
+        });
+
+        test('results length == 5', () => {
+            expect(search1.parseData(search1.body)).toHaveLength(5)
+        });
+    });
 
     //test('Choose Book')
 
