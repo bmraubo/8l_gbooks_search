@@ -4,31 +4,24 @@ const fs = require('fs');
 
 const fileName = 'readinglist.json';
 
-//Input
-
-function askQuery() {
-    return new Promise((resolve,reject) => {
-        inq
-        //Type in query in console
-        .prompt([
-            {
-                name: 'bookSearch',
-                message: 'Enter Search Term: '
-            },
-        ])
-        .then(answers => {
-            resolve(answers.bookSearch)
-        });
-    }) 
-};
-
 //Search Functionality
 
 class Search {
     constructor(searchTerm) {
         this.searchTerm = searchTerm;
         this.body = undefined
+        this.results = undefined
     }
+
+    runSearch = function() {
+        return new Promise(async(resolve,reject) => {
+            this.body = await this.getData()
+            this.results = this.parseData(this.body)
+            this.chosenBooks = await this.chooseBook(this.results)
+            await this.saveBook(this.chosenBooks)
+            resolve()
+        });
+    };
     
     gBooksCall = function(searchUrl) {
         return new Promise((resolve,reject) => {
@@ -41,9 +34,9 @@ class Search {
                     //otherwise fulfil promise and return body
                     resolve(body);
                 }
-            })
-        })
-    }
+            });
+        });
+    };
 
     getData = function() {
         return new Promise(async (resolve, reject) => {
@@ -52,8 +45,8 @@ class Search {
             var searchUrl = baseUrl + searchString;
             var body = await this.gBooksCall(searchUrl)
             resolve(body)
-        })
-    }
+        });
+    };
 
     parseData = function(data) {
         //console.log(data)
@@ -73,111 +66,90 @@ class Search {
                 );
             });
         return results;
-        }
-    }
+        };
+    };
 
     chooseBook = function(results) {
         //func takes the results of the search, prepares them for display with inquirer
         //results are then displayed with checkboxes that allow user input to save multiple books
         //chosen books are put into saveBook func
-        var chosenBooks = [];
-        let choices = [];
-        results.forEach(arr => {
-            //console.log(arr)
-            let bookObject = {
-                name: //how the book info will be displayed in the Results printout
-                String('\tTitle:\t\t' + arr.title + '\n' +
-                '\tAuthor(s):\t' + arr.authors + '\n' + 
-                '\tPublisher:\t' + arr.publisher + '\n'),
-                value: { //how the information will be stored in inquirer answers
-                    title: arr.title, 
-                    author: arr.authors, 
-                    publisher: arr.publisher
-                }
-            };
-            choices.push(bookObject);
-        })
-        inq
-        .prompt({ //displays list of results with checkboxes that can be selected to save book
-            type: 'checkbox',
-            name: 'Results',
-            message: 'Select books to add to reading list <SPACE> -- Press <ENTER> to continue\n',
-            choices: choices,
-            pageSize: 50,
-            loop: false
-        })
-        .then(answers => {
-            answers = Array(answers);
-            answers.forEach(x => {
-                x.Results.forEach(y => {
-                    chosenBooks.push(y);
-                });
+        return new Promise((resolve,reject) => {
+            var chosenBooks = [];
+            let choices = [];
+            results.forEach(arr => {
+                //console.log(arr)
+                let bookObject = {
+                    name: //how the book info will be displayed in the Results printout
+                    String('\tTitle:\t\t' + arr.title + '\n' +
+                    '\tAuthor(s):\t' + arr.authors + '\n' + 
+                    '\tPublisher:\t' + arr.publisher + '\n'),
+                    value: { //how the information will be stored in inquirer answers
+                        title: arr.title, 
+                        author: arr.authors, 
+                        publisher: arr.publisher
+                    }
+                };
+                choices.push(bookObject);
             });
-            this.saveBook(chosenBooks); 
+            inq
+            .prompt({ //displays list of results with checkboxes that can be selected to save book
+                type: 'checkbox',
+                name: 'Results',
+                message: 'Select books to add to reading list <SPACE> -- Press <ENTER> to continue\n',
+                choices: choices,
+                pageSize: 50,
+                loop: false
+            })
+            .then(answers => {
+                answers = Array(answers);
+                answers.forEach(x => {
+                    x.Results.forEach(y => {
+                        chosenBooks.push(y);
+                    });
+                });
+                resolve(chosenBooks); 
+            });
         });
     };
 
     saveBook = function(chosenBooks) {
-        var self = this;
         //converts chosen book data to JSON format and stores it in a local file
         //checks if a reading list already exists
-        if (fs.existsSync(fileName)) {
-            //unpack data
-            fs.readFile(fileName, 'utf8', function (err, data) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    var parsedData = JSON.parse(data);
-                    parsedData = parsedData.concat(chosenBooks);
-                    var jsonData = JSON.stringify(parsedData);
-                    fs.writeFile('readinglist.json', jsonData, function(err) {
-                        if (err) {
-                            console.log(err)
-                        } else {
-                            console.log(`${chosenBooks.length} book(s) saved to Reading List`);
-                            self.searchMenu();
-                        };
-                    });
-                };
-            });
-        } else {
-            //package data
-            var jsonData = JSON.stringify(chosenBooks);
-            //write to file
-            fs.writeFile('readinglist.json', jsonData, function(err) {
-                if (err) {
-                    console.log(err);
-                } else {
-                    console.log(`${chosenBooks.length} book(s) saved to Reading List`);
-                    self.searchMenu();
-                };
-            });
-        };
-    };
-    
-    searchMenu = function() {
-        //post search menu
-        inq
-        .prompt([
-            {
-                type: 'list',
-                name: 'Search Complete',
-                message: 'What would you like to do next?',
-                choices: [
-                    {name: 'Run another Search'},
-                    {name: 'View Reading List'},
-                    {name: 'Exit'}
-                ]
-            }])
-        .then((answers) => {
-            //console.log(answers);
-            if (answers['Search Complete'] == 'Run another Search') {
-                askQuery()
-            } else if (answers['Search Complete'] == 'View Reading List') {
-                ReadingList.parseFile()
-            } else {};
+        return new Promise((resolve, reject) => {
+            if (fs.existsSync(fileName)) {
+                //unpack data
+                fs.readFile(fileName, 'utf8', function (err, data) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        var parsedData = JSON.parse(data);
+                        parsedData = parsedData.concat(chosenBooks);
+                        var jsonData = JSON.stringify(parsedData);
+                        fs.writeFile('readinglist.json', jsonData, function(err) {
+                            if (err) {
+                                console.log(err)
+                            } else {
+                                console.log(`${chosenBooks.length} book(s) saved to Reading List`);
+                                resolve()
+                            };
+                        });
+                    };
+                });
+            } else {
+                //package data
+                var jsonData = JSON.stringify(chosenBooks);
+                //write to file
+                fs.writeFile('readinglist.json', jsonData, function(err) {
+                    if (err) {
+                        console.log(err);
+                    } else {
+                        console.log(`${chosenBooks.length} book(s) saved to Reading List`);
+                        resolve()
+                    };
+                });
+            };
         });
-    };
+    };  
 };   
 
 class Book {
@@ -217,60 +189,4 @@ class Book {
     };
 };
 
-//Reading List Functionality
-
-class ReadingList {
-    
-    static parseFile() {
-        var self = this;
-        //parse readinglist.json
-        if (fs.existsSync(fileName)) {
-            fs.readFile(fileName, 'utf8', function (err, data) {
-                if (err) {
-                    console.log(err)
-                } else {
-                    console.log('opening file...')
-                    var parsedData = JSON.parse(data)
-                    //console.log(parsedData)
-                    self.displayList(parsedData) 
-                };
-            }); 
-        } else {
-            console.log('No Reading List has been created')
-            self.listMenu()
-        };
-    };
-
-    static displayList(parsedData) {
-        //Display the Reading List
-        parsedData.forEach(obj => {
-            console.log('Title:\t\t' + obj.title + '\n' +
-            'Author(s):\t' + obj.author + '\n' + 
-            'Publisher:\t' + obj.publisher + '\n');
-        });
-        this.listMenu();
-    };
-
-    static listMenu() {
-        //Post-List Menu
-        inq
-        .prompt([
-            {
-                type: 'list',
-                name: 'End of Reading List',
-                message: 'What would you like to do next?',
-                choices: [
-                    {name: 'Run Search'},
-                    {name: 'Exit'}
-                ]
-            }])
-        .then((answers) => {
-            //console.log(answers);
-            if (answers['End of Reading List'] == 'Run Search') {
-                askQuery()
-            } else {}
-        });
-    };
-};
-
-module.exports = {Search, Book, ReadingList, askQuery};
+module.exports = {Search, Book};
