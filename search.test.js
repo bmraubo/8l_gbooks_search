@@ -1,4 +1,4 @@
-const { test, expect, describe } = require('@jest/globals');
+const { test, expect, describe, it } = require('@jest/globals');
 const search = require('./search');
 
 async function getTestData(searchTerm) {
@@ -7,8 +7,6 @@ async function getTestData(searchTerm) {
     search1.results = search1.parseData(search1.body);
     return search1
 };
-
-const search1 = getTestData('moby dick');
 
 describe('Testing Book Objects...', () => {
     var book1 = new search.Book(
@@ -31,21 +29,23 @@ describe('Testing Book Objects...', () => {
 });
 
 describe('Testing Search Functionality', () => {
-    
+
     ///I'll need a mock heresearch1.body = await search1.getData()
     //tests go here
 
-    test('getData - body is not undefined', () => {
+    test('getData - body is not undefined', async () => {
+        var search1 = await getTestData('moby dick')
         expect(typeof search1.body).not.toBe("undefined")
     });
 
-    describe('parseData - should return an array of length 5', () => {
-        test('Data type is array', () => {
-            console.log(typeof search1.results)
-            expect(typeof search1.results).toBe('array')
+    describe('parseData - should return an object of length 5', () => {
+        test('Data type is object', async () => {
+            var search1 = await getTestData('moby dick');
+            expect(typeof search1.results).toBe("object");
         });
 
-        test('results length == 5', () => {
+        test('results length == 5', async () => {
+            var search1 = await getTestData('moby dick');
             expect(search1.results).toHaveLength(5)
         });
     });

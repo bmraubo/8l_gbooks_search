@@ -9,8 +9,6 @@ const fileName = 'readinglist.json';
 class Search {
     constructor(searchTerm) {
         this.searchTerm = searchTerm;
-        this.body = undefined
-        this.results = undefined
     }
 
     runSearch = function() {
