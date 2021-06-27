@@ -17,10 +17,14 @@ function mainMenu() {
                 {name: 'Exit'}
             ]
         }])
-    .then((answers) => {
+    .then(async (answers) => {
         //console.log(answers);
         if (answers['Main Menu'] == 'Search for Book') {
-            Search.askQuery()
+            let searchTerm = await Search.askQuery();
+            search = new Search.Search(searchTerm);
+            search.body = await search.getData()
+            let results = search.parseData(search.body)
+            search.chooseBook(results)
         } else if (answers['Main Menu'] == 'View Reading List') {
             Search.ReadingList.parseFile()
         } else {}

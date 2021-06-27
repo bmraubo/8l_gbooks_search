@@ -7,18 +7,19 @@ const fileName = 'readinglist.json';
 //Input
 
 function askQuery() {
+    return new Promise((resolve,reject) => {
+        inq
+        .prompt([
+            {
+                name: 'bookSearch',
+                message: 'Enter Search Term: '
+            },
+        ])
+        .then(answers => {
+            resolve(answers.bookSearch)
+        });
+    })
     //Type in query in console
-    inq
-    .prompt([
-        {
-            name: 'bookSearch',
-            message: 'Enter Search Term: '
-        },
-    ])
-    .then(answers => {
-        search = new Search(answers.bookSearch)
-        search.getData();
-    }); 
 };
 
 //Search Functionality
@@ -26,6 +27,7 @@ function askQuery() {
 class Search {
     constructor(searchTerm) {
         this.searchTerm = searchTerm;
+        this.body = undefined
     }
     
     gBooksCall = function(searchUrl) {
@@ -43,12 +45,14 @@ class Search {
         })
     }
 
-    getData = async function() {
-        var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-        var searchString = this.searchTerm.split(' ').join('+');
-        var searchUrl = baseUrl + searchString;
-        var body = await this.gBooksCall(searchUrl)
-        this.parseData(body)
+    getData = function() {
+        return new Promise(async (resolve, reject) => {
+            var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
+            var searchString = this.searchTerm.split(' ').join('+');
+            var searchUrl = baseUrl + searchString;
+            var body = await this.gBooksCall(searchUrl)
+            resolve(body)
+        })
     }
 
     parseData = function(data) {
@@ -68,7 +72,7 @@ class Search {
                     )
                 );
             });
-        this.chooseBook(results);
+        return results;
         }
     }
 
