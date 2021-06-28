@@ -13,7 +13,8 @@ class Search {
 
     runSearch = function() {
         return new Promise(async(resolve) => {
-            this.body = await this.getData()
+            this.searchUrl = this.formatUrl()
+            this.body = await this.gBooksCall(this.searchUrl)
             this.results = this.parseData(this.body)
             if (this.results == "No Results") {
                 resolve()
@@ -23,6 +24,13 @@ class Search {
                 resolve()
             }
         });
+    };
+
+    formatUrl = function() {
+        var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
+        var searchString = this.searchTerm.split(' ').join('+');
+        var searchUrl = baseUrl + searchString;
+        return searchUrl
     };
     
     gBooksCall = function(searchUrl) {
@@ -37,16 +45,6 @@ class Search {
                     resolve(body);
                 }
             });
-        });
-    };
-
-    getData = function() {
-        return new Promise(async (resolve) => {
-            var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
-            var searchString = this.searchTerm.split(' ').join('+');
-            var searchUrl = baseUrl + searchString;
-            var body = await this.gBooksCall(searchUrl)
-            resolve(body)
         });
     };
 
