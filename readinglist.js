@@ -8,6 +8,7 @@ class ReadingList {
 
     static viewList = async function () {
         var self = this
+        console.log('opening file...')
         var parsedData = await self.parseFile()
         self.displayList(parsedData)
     };
@@ -20,9 +21,7 @@ class ReadingList {
                     if (err) {
                         console.log(err)
                     } else {
-                        console.log('opening file...')
                         var parsedData = JSON.parse(data)
-                        //console.log(parsedData)
                         resolve(parsedData) 
                     };
                 }); 

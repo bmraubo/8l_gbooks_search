@@ -12,12 +12,16 @@ class Search {
     }
 
     runSearch = function() {
-        return new Promise(async(resolve,reject) => {
+        return new Promise(async(resolve) => {
             this.body = await this.getData()
             this.results = this.parseData(this.body)
-            this.chosenBooks = await this.chooseBook(this.results)
-            await this.saveBook(this.chosenBooks)
-            resolve()
+            if (this.results == "No Results") {
+                resolve()
+            } else {
+                this.chosenBooks = await this.chooseBook(this.results)
+                await this.saveBook(this.chosenBooks)
+                resolve()
+            }
         });
     };
     
@@ -37,7 +41,7 @@ class Search {
     };
 
     getData = function() {
-        return new Promise(async (resolve, reject) => {
+        return new Promise(async (resolve) => {
             var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
             var searchString = this.searchTerm.split(' ').join('+');
             var searchUrl = baseUrl + searchString;
@@ -53,7 +57,7 @@ class Search {
         var parsedData = JSON.parse(data);
         if (parsedData.items == undefined) {
             console.log('No Results');
-            this.searchMenu()
+            return "No Results"
         } else {
             parsedData.items.slice(0,5).forEach(item => {
                 results.push(new Book(
@@ -71,7 +75,7 @@ class Search {
         //func takes the results of the search, prepares them for display with inquirer
         //results are then displayed with checkboxes that allow user input to save multiple books
         //chosen books are put into saveBook func
-        return new Promise((resolve,reject) => {
+        return new Promise((resolve) => {
             var chosenBooks = [];
             let choices = [];
             results.forEach(arr => {
@@ -113,7 +117,7 @@ class Search {
     saveBook = function(chosenBooks) {
         //converts chosen book data to JSON format and stores it in a local file
         //checks if a reading list already exists
-        return new Promise((resolve, reject) => {
+        return new Promise((resolve) => {
             if (fs.existsSync(fileName)) {
                 //unpack data
                 fs.readFile(fileName, 'utf8', function (err, data) {
