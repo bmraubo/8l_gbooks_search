@@ -3,15 +3,19 @@ A CLI Google Books search app with locally-stored Reading List function
 
 - [Requirements](#Requirements)
 - [Using the App](#Using-the-App)
-- [Saving Books](#Saving-Books)
+    - [Saving Books](#Saving-Books)
 - [Brief](#Brief)
 - [Technical Summary](#Technical-Summary)
 - [Description of Process](#Description-of-Process)
-- [Creating a functioning application](#Creating-a-functioning-application)
-- [Search Feature](#Search-Feature)
-- [Reading List Feature](#Reading-List-Feature)
-- [Considering Useability](#Considering-Useability)
-- [Edge Cases and Testing](#Edge-Cases-and-Testing)
+    - [Creating a functioning application](#Creating-a-functioning-application)
+    - [Search Feature](#Search-Feature)
+    - [Reading List Feature](#Reading-List-Feature)
+    - [Considering Useability](#Considering-Useability)
+    - [Edge Cases and Testing](#Edge-Cases-and-Testing)
+- [Refactoring](#Refactoring)
+    - [Testing](#Testing)
+    - [Objects and Asynchronous functionality](#Objects-and-Asynchronous-functionality)
+
 
 ---
 
@@ -19,9 +23,9 @@ A CLI Google Books search app with locally-stored Reading List function
 
 [Node.js v14.17.0](https://nodejs.org/)
 
-[Inquirer 8.1.0](https://github.com/SBoudrias/Inquirer.js/)
+[Inquirer 8.1.1](https://github.com/SBoudrias/Inquirer.js/)
 
-[Requests 2.88.2](https://github.com/request/request)
+[Request 2.88.2](https://github.com/request/request)
 
 ## Using the App
 
@@ -186,3 +190,107 @@ Each function was initially tested by regularly printing the output to the conso
 Once the Search feature was working based on manual searches, a list of search terms consisting of words and random letter stings was fed into the runSearch() function. Instead of triggering the ChooseBook() function, the results were printed to the console. 
 
 This revealed two edge cases; where Google Books returns no results, and where the list of authors is unmanageable. Both cases were handles within the code. 
+
+## Refactoring
+
+Having received very useful feedback, it has been suggested that I refactor the app considering the following:
+
+* How might your program design differ if you had written it "tests-first?"
+* How might your current design limit your ability to write tests effectively?
+* It's possible to organize the code in `search.js` in a more "object oriented" way.
+* You should use `package.json` to provide a list of dependencies that npm will automatically install, saving your user from needing to install them manually.
+
+The changes based on the first three points are described below. Tests have been written for the existing methods in the app, and although the possibilities for truly 'test-first' development are limited, since the initial app has been completed, the refactoring has put tests first. Although the testing implementation is flawed, the importance of test-driven development has been highlighted.
+
+`search.js` has been reorganised. Search functionality is now built around the Search and Book objects. Based on the need for proper testing, for which the initial architecture was not well suited, the refactoring also utilises async/await to permit the code being borken up (and therefore expanded upon and maintained).
+
+Finally, `package.json` has been created using `npm init`.
+
+### Testing
+
+It is difficult to test the original app. The architecture is such that the execution of the functions is nested inside a large loop, offering few concrete points at which to run tests. Data is run into functions, but there are no clear results to check. What testing is possible is rendered ineffective by the amount of material being tested - the functions do too much work. getData is a perfect example - the function formats the searchUrl and then makes the API call.  
+
+As part of the refactoring process, I have used written and YouTube resources to gain a better understanding of test-driven development. I have come to realise that my understanding of testing at the start of this assessment was deeply flawed. While I understood the inmportance of constantly testing the code (mainly through console.log of the output of various statements) in order to ensure that the function works as expected and is easier to maintain, I did not make the connection between testing and the development of the very structure of the application. In test-driven development, the tests drive the development of application - they are the starting point and development meets the test. 
+
+Developing tests to fit an already developed application is difficult. In designing the tests included in the refactored application, I struggled to have the tests adequately cover the working of the application, and the design of mosts tests is largely opportunisitc.
+
+However, the introduction of tests did result in a new way of looking at the application, and where there were opporunities to refactor the application around the test, they were taken.
+
+So the getData function of the initial application did two things:
+1. Takes in the search term and constructs the Url for the API call
+2. Makes the API call
+
+I wanted to test both these mechanisms, but was limited by the way the function was constructed - so I split it up into testable methods: formatUrl and gBooksCall.
+
+The tests:
+
+```
+it('formatUrl - should return searchUrl in proper format', () => {
+    searchTerm = 'moby dick'
+    let testSearch = new search.Search(searchTerm);
+    var searchUrl = testSearch.formatUrl(searchTerm);
+    expect(searchUrl).toBe('https://www.googleapis.com/books/v1/volumes?q=moby+dick');
+});
+
+it('gBooksCall', async () => {
+    var search6 = await getTestData('call of the wild');
+    expect(typeof search6.gBooksCall(search6.searchUrl)).toBe("object");
+});
+```
+
+The methods:
+
+```
+formatUrl = function() {
+    var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
+    var searchString = this.searchTerm.split(' ').join('+');
+    var searchUrl = baseUrl + searchString;
+    return searchUrl
+};
+
+gBooksCall = function(searchUrl) {
+    return new Promise((resolve,reject) => {
+        req(searchUrl, function (error, response, body) {
+            if (error != null) {
+                // notify user if error occurs
+                console.error('error: ', error);
+                reject(console.log('statusCode: ', response && response.statusCode));
+            } else {
+                //otherwise fulfil promise and return body
+                resolve(body);
+            }
+        });
+    });
+};
+```
+
+The most comprehensively tested portion of the app is the parseData function, which tests for:
+* The 'no results' edge case
+* Whether the returned data is an object (as opposed to a string before it was parsed)
+* That there are 5 results, and,
+* That the results keys correspond to title, authors and publisher - the information we want.
+* Finally that all that information is saved as properties of the Search object.
+
+While these tests were written after the inital application's parseData function, when the app was refactored it relied on the tests.
+
+The closest I got to true test-driven development was the refactoring of the readinglist.json read/write functionality. However, I struggled using jest to mock the use of the fs.readFile and fs.writeFile methods within the tests. So while those methods were written 'test-first', they could not be properly tested - ultimately, due to time-constraints, I decided to replace the non-functional tests with comments designed to demonstrate my thinking. 
+
+A further issue I encountered with testing, which I believe could similarly be resolved through mocks, is the need to make API calls in order to obtain the data to work with. This slows down the testing significantly and is inelegant. 
+
+Despite these setbacks, implementing tests was very useful from a learning perspective and gave me a much greater understanding of test-driven development and the red->green->refactor approach.
+
+Generally speaking, refactoring the portions of the app where testing was in place was much easier. Finding bugs was a lot faster and clearer with tests as even the limited testing I had in place could point in me in the direction of the problem. Where refactoring affected the functionality of the other methods, this immediately became clear. 
+
+Testing also provides a clear conceptual framework around which to build the application - the term 'specification' is perhaps more suitable. I can see clear benefits to designing software test-first; greater clarity of code, greater degree of decoupling, easier maintenence and refactor, and the code is much more exendable. 
+
+The test-driven methodology is extremely sound - I will definately be applying it going forward. Looking back at earlier projects - some that had been abandoned or completely rewritten because of a fault in the code that I could not identify - their development would have been greatly streamlined if I started tests first and work to that specification. 
+
+### Objects and Asynchronous functionality
+
+The entire app has been refactored to make use of objects. Search functionality relies on the Search class to administer the running of the search and the saving of results to readinglist.json, as well the Book class to ensure proper formating of the results per Book. The ReadingList class deals with Reading List functionality - unlike Search and Book, it features static functions that can be called without creating a new object. 
+
+The refactoring of the app to rely on objects also presented an opportunity for better tests. The previous design of having one function flow into another was discarded in favour of using async/await to better implement asynchronous functionality.
+
+Since the app now relies on Objects and asynchronous methods, the architecture was improved by placing the Search functionality from the Reading List functionality within seperate files - the loop being the main cause of the circular dependancy issues encountered by the initial app.
+
+The result is an application that is more decoupled, easier to maintain, and easier to expand on. 
