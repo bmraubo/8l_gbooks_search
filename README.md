@@ -208,11 +208,9 @@ Finally, `package.json` has been created using `npm init`.
 
 ### Testing
 
-I have read up more on test driven development.
-
 It is difficult to test the original app. The architecture is such that the execution of the functions is nested inside a large loop, offering few concrete points at which to run tests. Data is run into functions, but there are no clear results to check. What testing is possible is rendered ineffective by the amount of material being tested - the functions do too much work. getData is a perfect example - the function formats the searchUrl and then makes the API call.  
 
-I have come to realise that my understanding of testing at the start of this assessment was deeply flawed. While I understood the inmportance of constantly testing the code (mainly through console.log of the output of various statements) in order to ensure that the function works as expected and is easier to maintain, I did not make the connection between testing and the development of the very structure of the application. In test-driven development, the tests drive the development of application - they are the starting point and development meets the test. 
+As part of the refactoring process, I have used written and YouTube resources to gain a better understanding of test-driven development. I have come to realise that my understanding of testing at the start of this assessment was deeply flawed. While I understood the inmportance of constantly testing the code (mainly through console.log of the output of various statements) in order to ensure that the function works as expected and is easier to maintain, I did not make the connection between testing and the development of the very structure of the application. In test-driven development, the tests drive the development of application - they are the starting point and development meets the test. 
 
 Developing tests to fit an already developed application is difficult. In designing the tests included in the refactored application, I struggled to have the tests adequately cover the working of the application, and the design of mosts tests is largely opportunisitc.
 
@@ -279,7 +277,7 @@ The closest I got to true test-driven development was the refactoring of the rea
 
 A further issue I encountered with testing, which I believe could similarly be resolved through mocks, is the need to make API calls in order to obtain the data to work with. This slows down the testing significantly and is inelegant. 
 
-Despite these setbacks, implementing tests was very useful from a learning perspective and gave me a much greater understanding of test-driven development.
+Despite these setbacks, implementing tests was very useful from a learning perspective and gave me a much greater understanding of test-driven development and the red->green->refactor approach.
 
 Generally speaking, refactoring the portions of the app where testing was in place was much easier. Finding bugs was a lot faster and clearer with tests as even the limited testing I had in place could point in me in the direction of the problem. Where refactoring affected the functionality of the other methods, this immediately became clear. 
 
