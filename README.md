@@ -200,9 +200,11 @@ Having received very useful feedback, it has been suggested that I refactor the 
 * It's possible to organize the code in `search.js` in a more "object oriented" way.
 * You should use `package.json` to provide a list of dependencies that npm will automatically install, saving your user from needing to install them manually.
 
-The changes based on the first three points are described below. Tests have been written for the existing methods in the app, and although the possibilities for truly 'test-first' development are limited, since the initial app has been completed, the refactoring has put tests first. 
+The changes based on the first three points are described below. Tests have been written for the existing methods in the app, and although the possibilities for truly 'test-first' development are limited, since the initial app has been completed, the refactoring has put tests first. Although the testing implementation is flawed, the importance of test-driven development has been highlighted.
 
-`search.js` has been reorganised. Search functionality is now built around the Search and Book objects. Based on the need for proper testing, for which the initial architecture was not well suited, the refactoring also utilises async/await to permit the code being borken up - both in the sense that func
+`search.js` has been reorganised. Search functionality is now built around the Search and Book objects. Based on the need for proper testing, for which the initial architecture was not well suited, the refactoring also utilises async/await to permit the code being borken up (and therefore expanded upon and maintained).
+
+Finally, `package.json` has been created using `npm init`.
 
 ### Testing
 

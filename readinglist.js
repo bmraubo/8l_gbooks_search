@@ -7,6 +7,7 @@ const fileName = 'readinglist.json';
 class ReadingList {
 
     static viewList = async function () {
+        // deals with view list process
         var self = this
         let parsedData = await this.parseFile()
         if (parsedData != 'None') {
@@ -18,6 +19,7 @@ class ReadingList {
     };
     
     static parseFile = function () {
+        // checks if Json exists, if yes then opens it
         return new Promise(async (resolve) => {    
             var self = this
             //parse readinglist.json
@@ -40,6 +42,7 @@ class ReadingList {
     };
 
     static readList = function (fileName) {
+        //reads the Json and gives an error if there is a problem
         return new Promise((resolve) => {
             fs.readFile(fileName, 'utf8', function (err, data) {
                 if (err) {

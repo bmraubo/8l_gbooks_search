@@ -23,6 +23,7 @@ function askQuery() {
 //Main menu
 
 function mainMenu() {
+    //main menu displayed when app is launched
     console.log('GoogleBooks Search\nDeveloped for 8thLight Technical Assessment\n');
     inq
     .prompt([
@@ -51,7 +52,7 @@ function mainMenu() {
 };
 
 function searchMenu() {
-    //post search menu
+    //menu displayed after completing a search
     inq
     .prompt([
         {
@@ -79,7 +80,7 @@ function searchMenu() {
 };
 
 function listMenu() {
-    //Post-List Menu
+    //menu displayed after viewing the reading list
     inq
     .prompt([
         {
@@ -92,7 +93,6 @@ function listMenu() {
             ]
         }])
     .then(async (answers) => {
-        //console.log(answers);
         if (answers['End of Reading List'] == 'Run Search') {
             let searchTerm = await askQuery();
             let search = new Search.Search(searchTerm);
