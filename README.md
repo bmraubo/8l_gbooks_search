@@ -252,6 +252,14 @@ gBooksCall = function(searchUrl) {
     });
 };
 ```
+The most comprehensively tested portion of the app is the parseData function, which tests for:
+* The 'no results' edge case
+* Whether the returned data is an object (as opposed to a string before it was parsed)
+* That there are 5 results, and,
+* That the results keys correspond to title, authors and publisher - the information we want.
+* Finally that all that information is saved as properties of the Search object.
+
+While these tests were written after the inital application's parseData function, when the app was refactored it relied on the tests.
 
 The closest I got to true test-driven development was the refactoring of the readinglist.json read/write functionality. However, I struggled using jest to mock the use of the fs.readFile and fs.writeFile methods within the tests. So while those methods were written 'test-first', they could not be properly tested - ultimately, due to time-constraints, I decided to replace the non-functional tests with comments designed to demonstrate my thinking. 
 

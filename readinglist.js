@@ -44,7 +44,7 @@ class ReadingList {
             fs.readFile(fileName, 'utf8', function (err, data) {
                 if (err) {
                     console.log(err);
-                    resolve(err)
+                    resolve('None')
                 } else {
                     var parsedData = JSON.parse(data)
                     resolve(parsedData);

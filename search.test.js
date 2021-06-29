@@ -1,9 +1,6 @@
 const { ReadingList } = require('./readinglist');
 const search = require('./search');
 const fs = require('fs');
-const { it, expect } = require('@jest/globals');
-
-
 
 jest.mock('fs')
 
@@ -75,7 +72,7 @@ describe('Testing Search Functionality', () => {
 
         it("parseData - undefined should return 'No Results'", async () => {
             var search2 = await getTestData('asdgkhjgbap;');
-            expect(typeof search2.results).toBe("string")
+            expect(search2.results).toBe("No Results")
         });
 
         it('parseData result type is object', async () => {
@@ -92,6 +89,14 @@ describe('Testing Search Functionality', () => {
             var search4 = await getTestData('solaris');
             expect(Object.keys(search4.results[0]).sort()).toEqual(["title", "authors", "publisher"].sort())
         });
+
+        it('Checking Search properties after Parsing complete', async () => {
+            var search4 = await getTestData('solaris');
+            expect(typeof search4.searchTerm).toBe("string");
+            expect(typeof search4.searchUrl).toBe("string");
+            expect(typeof search4.body).toBe("string")
+            expect(typeof search4.results).toBe("object")
+        })
     });
 });
 
