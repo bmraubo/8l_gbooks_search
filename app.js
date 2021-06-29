@@ -5,7 +5,7 @@ const List = require('./readinglist.js')
 //Input
 
 function askQuery() {
-    return new Promise((resolve,reject) => {
+    return new Promise((resolve) => {
         inq
         //Type in query in console
         .prompt([

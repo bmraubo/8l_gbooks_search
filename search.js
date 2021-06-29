@@ -12,6 +12,7 @@ class Search {
     }
 
     runSearch = function() {
+        //executes search methods 
         return new Promise(async(resolve) => {
             this.searchUrl = this.formatUrl()
             this.body = await this.gBooksCall(this.searchUrl)
@@ -27,6 +28,7 @@ class Search {
     };
 
     formatUrl = function() {
+        //takes search term and settles searchUrl for API call
         var baseUrl = 'https://www.googleapis.com/books/v1/volumes?q=';
         var searchString = this.searchTerm.split(' ').join('+');
         var searchUrl = baseUrl + searchString;
@@ -34,6 +36,7 @@ class Search {
     };
     
     gBooksCall = function(searchUrl) {
+        //API call using searchUrl
         return new Promise((resolve,reject) => {
             req(searchUrl, function (error, response, body) {
                 if (error != null) {
@@ -49,7 +52,6 @@ class Search {
     };
 
     parseData = function(data) {
-        //console.log(data)
         var results = [];
         //takes the request data and extracts the title, authors and publisher
         var parsedData = JSON.parse(data);
@@ -72,7 +74,7 @@ class Search {
     chooseBook = function(results) {
         //func takes the results of the search, prepares them for display with inquirer
         //results are then displayed with checkboxes that allow user input to save multiple books
-        //chosen books are put into saveBook func
+        //returns the chosen books
         return new Promise((resolve) => {
             var chosenBooks = [];
             let choices = [];

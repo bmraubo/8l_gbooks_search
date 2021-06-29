@@ -15,7 +15,7 @@ A CLI Google Books search app with locally-stored Reading List function
 - [Refactoring](#Refactoring)
     - [Testing](#Testing)
     - [Objects and Asynchronous functionality](#Objects-and-Asynchronous-functionality)
-    - [Packaging](#Packaging)
+
 
 ---
 
@@ -193,11 +193,22 @@ This revealed two edge cases; where Google Books returns no results, and where t
 
 ## Refactoring
 
+Having received very useful feedback, it has been suggested that I refactor the app considering the following:
+
+* How might your program design differ if you had written it "tests-first?"
+* How might your current design limit your ability to write tests effectively?
+* It's possible to organize the code in `search.js` in a more "object oriented" way.
+* You should use `package.json` to provide a list of dependencies that npm will automatically install, saving your user from needing to install them manually.
+
+The changes based on the first three points are described below. Tests have been written for the existing methods in the app, and although the possibilities for truly 'test-first' development are limited, since the initial app has been completed, the refactoring has put tests first. 
+
+`search.js` has been reorganised. Search functionality is now built around the Search and Book objects. Based on the need for proper testing, for which the initial architecture was not well suited, the refactoring also utilises async/await to permit the code being borken up - both in the sense that func
+
 ### Testing
 
 I have read up more on test driven development.
 
-It is difficult to test the original app. The architecture is such that the execution of the functions is nested inside a large loop, offering few concrete points at which to run tests. Data is run into functions, but there are no clear results to check.
+It is difficult to test the original app. The architecture is such that the execution of the functions is nested inside a large loop, offering few concrete points at which to run tests. Data is run into functions, but there are no clear results to check. What testing is possible is rendered ineffective by the amount of material being tested - the functions do too much work. getData is a perfect example - the function formats the searchUrl and then makes the API call.  
 
 I have come to realise that my understanding of testing at the start of this assessment was deeply flawed. While I understood the inmportance of constantly testing the code (mainly through console.log of the output of various statements) in order to ensure that the function works as expected and is easier to maintain, I did not make the connection between testing and the development of the very structure of the application. In test-driven development, the tests drive the development of application - they are the starting point and development meets the test. 
 
@@ -225,8 +236,8 @@ it('gBooksCall', async () => {
     var search6 = await getTestData('call of the wild');
     expect(typeof search6.gBooksCall(search6.searchUrl)).toBe("object");
 });
-
 ```
+
 The methods:
 
 ```
@@ -252,6 +263,7 @@ gBooksCall = function(searchUrl) {
     });
 };
 ```
+
 The most comprehensively tested portion of the app is the parseData function, which tests for:
 * The 'no results' edge case
 * Whether the returned data is an object (as opposed to a string before it was parsed)
@@ -279,8 +291,6 @@ The entire app has been refactored to make use of objects. Search functionality 
 
 The refactoring of the app to rely on objects also presented an opportunity for better tests. The previous design of having one function flow into another was discarded in favour of using async/await to better implement asynchronous functionality.
 
-Once the objects relied on asynchronous methods, the architecture of the app could be improved by placing the Search functionality from the Reading List functionality within seperate files - the loop being the main cause of the circular dependancy issues encountered by the initial app. 
+Since the app now relies on Objects and asynchronous methods, the architecture was improved by placing the Search functionality from the Reading List functionality within seperate files - the loop being the main cause of the circular dependancy issues encountered by the initial app.
 
 The result is an application that is more decoupled, easier to maintain, and easier to expand on. 
-
-### Packaging
