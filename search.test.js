@@ -60,14 +60,14 @@ describe('Testing Search Functionality', () => {
     describe('Testing API Call...', () => {
         it('formatUrl - should return searchUrl in proper format', () => {
             searchTerm = 'moby dick'
-            let testSearch = new search.Search(searchTerm)
-            var searchUrl = testSearch.formatUrl(searchTerm)
-            expect(searchUrl).toBe('https://www.googleapis.com/books/v1/volumes?q=moby+dick')
+            let testSearch = new search.Search(searchTerm);
+            var searchUrl = testSearch.formatUrl(searchTerm);
+            expect(searchUrl).toBe('https://www.googleapis.com/books/v1/volumes?q=moby+dick');
         });
     
         it('gBooksCall', async () => {
-            var search6 = await getTestData('call of the wild')
-            expect(typeof search6.gBooksCall(search6.searchUrl)).toBe("object")
+            var search6 = await getTestData('call of the wild');
+            expect(typeof search6.gBooksCall(search6.searchUrl)).toBe("object");
         });
     });
 

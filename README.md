@@ -15,6 +15,7 @@ A CLI Google Books search app with locally-stored Reading List function
 - [Refactoring](#Refactoring)
     - [Testing](#Testing)
     - [Objects and Asynchronous functionality](#Objects-and-Asynchronous-functionality)
+    - [Packaging](#Packaging)
 
 ---
 
@@ -215,14 +216,14 @@ The tests:
 ```
 it('formatUrl - should return searchUrl in proper format', () => {
     searchTerm = 'moby dick'
-    let testSearch = new search.Search(searchTerm)
-    var searchUrl = testSearch.formatUrl(searchTerm)
-    expect(searchUrl).toBe('https://www.googleapis.com/books/v1/volumes?q=moby+dick')
+    let testSearch = new search.Search(searchTerm);
+    var searchUrl = testSearch.formatUrl(searchTerm);
+    expect(searchUrl).toBe('https://www.googleapis.com/books/v1/volumes?q=moby+dick');
 });
 
 it('gBooksCall', async () => {
-    var search6 = await getTestData('call of the wild')
-    expect(typeof search6.gBooksCall(search6.searchUrl)).toBe("object")
+    var search6 = await getTestData('call of the wild');
+    expect(typeof search6.gBooksCall(search6.searchUrl)).toBe("object");
 });
 
 ```
@@ -254,6 +255,10 @@ gBooksCall = function(searchUrl) {
 
 The closest I got to true test-driven development was the refactoring of the readinglist.json read/write functionality. However, I struggled using jest to mock the use of the fs.readFile and fs.writeFile methods within the tests. So while those methods were written 'test-first', they could not be properly tested - ultimately, due to time-constraints, I decided to replace the non-functional tests with comments designed to demonstrate my thinking. 
 
+A further issue I encountered with testing, which I believe could similarly be resolved through mocks, is the need to make API calls in order to obtain the data to work with. This slows down the testing significantly and is inelegant. 
+
+Despite these setbacks, implementing tests was very useful from a learning perspective and gave me a much greater understanding of test-driven development.
+
 Generally speaking, refactoring the portions of the app where testing was in place was much easier. Finding bugs was a lot faster and clearer with tests as even the limited testing I had in place could point in me in the direction of the problem. Where refactoring affected the functionality of the other methods, this immediately became clear. 
 
 Testing also provides a clear conceptual framework around which to build the application - the term 'specification' is perhaps more suitable. I can see clear benefits to designing software test-first; greater clarity of code, greater degree of decoupling, easier maintenence and refactor, and the code is much more exendable. 
@@ -269,3 +274,5 @@ The refactoring of the app to rely on objects also presented an opportunity for 
 Once the objects relied on asynchronous methods, the architecture of the app could be improved by placing the Search functionality from the Reading List functionality within seperate files - the loop being the main cause of the circular dependancy issues encountered by the initial app. 
 
 The result is an application that is more decoupled, easier to maintain, and easier to expand on. 
+
+### Packaging
